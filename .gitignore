@@ -416,3 +416,13 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Angular
+dist/
+.angular/
+
+# Mac
+.DS_Store
+
+# ASP.NET secrets (IMPORTANT - keeps your DB credentials out of GitHub)
+appsettings.Development.json
