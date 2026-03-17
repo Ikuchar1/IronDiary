@@ -50,7 +50,7 @@ public class WorkoutLogController : ControllerBase
         }
 
         //make sure the it belongs to current user
-        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
             return Forbid();
         }
@@ -70,7 +70,7 @@ public class WorkoutLogController : ControllerBase
         }
 
         //make sure the it belongs to current user
-        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
             return Forbid();
         }
