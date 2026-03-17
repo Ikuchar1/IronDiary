@@ -31,4 +31,45 @@ public class WorkoutLogController : ControllerBase
         //return CreatedAtAction(nameof(GetLogs), new { id = log.Id }, log);
     }
 
+    //get by id
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetWorkoutLogById(int id)
+    {
+        var log = await _context.WorkoutLogs.FindAsync(id);
+
+        if(log == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(log);
+    }
+
+    //delete by id
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteWorkoutLogById(int id)
+    {
+        var log = await _context.WorkoutLogs.FindAsync(id);
+
+        if(log == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            // delete the workout log from the database
+            _context.WorkoutLogs.Remove(log);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch(Exception ex)
+        {
+            // Log the exception (not implemented here)
+            return StatusCode(500, "An error occurred while deleting the workout log.");
+        }
+
+        
+    }
+
 }

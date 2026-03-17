@@ -29,4 +29,45 @@ public class WorkoutPhotoController : ControllerBase
         return Ok(photo);
     }
 
+    //get by id
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetWorkoutPhotoById(int id)
+    {
+        var photo = await _context.WorkoutPhotos.FindAsync(id);
+
+        if(photo == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(photo);
+    }
+
+    //delete by id
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteWorkoutPhotoById(int id)
+    {
+        var photo = await _context.WorkoutPhotos.FindAsync(id);
+
+        if(photo == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            // delete the workout photo from the database
+            _context.WorkoutPhotos.Remove(photo);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch(Exception ex)
+        {
+            // Log the exception (not implemented here)
+            return StatusCode(500, "An error occurred while deleting the workout photo.");
+        }
+
+        
+    }
+
 }
