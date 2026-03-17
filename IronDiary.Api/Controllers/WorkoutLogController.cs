@@ -35,9 +35,11 @@ public class WorkoutLogController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetWorkoutLogById(int id)
     {
-        var log = await _context.WorkoutLogs.FindAsync(id);
+        var log = await _context.WorkoutLogs
+            .Include(w => w.Photos)
+            .FirstOrDefaultAsync(w => w.Id == id);
 
-        if(log == null)
+        if (log == null)
         {
             return NotFound();
         }
