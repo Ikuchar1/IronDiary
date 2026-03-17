@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class BodyWeightLogController : ControllerBase
@@ -16,7 +19,9 @@ public class BodyWeightLogController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetBodyWeightLogs()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var logs = await _context.BodyWeightLogs
+            .Where(w => w.UserId == userId)
             .ToListAsync();
         return Ok(logs);
     }
@@ -24,6 +29,7 @@ public class BodyWeightLogController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateBodyWeightLog(BodyWeightLog log)
     {
+        log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.BodyWeightLogs.Add(log);
         await _context.SaveChangesAsync();
         return Ok(log);

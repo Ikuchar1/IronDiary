@@ -1,6 +1,9 @@
+using System.Reflection.Metadata;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class WorkoutLogController : ControllerBase
@@ -16,8 +19,10 @@ public class WorkoutLogController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetLogs()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var logs = await _context.WorkoutLogs
             .Include(w => w.Photos) // Include related photos
+            .Where(w => w.UserId == userId)
             .ToListAsync();
         return Ok(logs);
     }
@@ -25,10 +30,10 @@ public class WorkoutLogController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateLog(WorkoutLog log)
     {
+        log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.WorkoutLogs.Add(log);
         await _context.SaveChangesAsync();
         return Ok(log);
-        //return CreatedAtAction(nameof(GetLogs), new { id = log.Id }, log);
     }
 
     //get by id

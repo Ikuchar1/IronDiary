@@ -6,4 +6,5 @@ public class WorkoutLog
     public string? Description { get; set; } //optional notes about the workout
     public DateTime Date { get; set; } = DateTime.UtcNow; //date of the workout
     public ICollection<WorkoutPhoto> Photos { get; set; } = new List<WorkoutPhoto>(); //collection of pump pics
+    public string UserId { get; set; } = string.Empty; //foreign key to the user who logged the workout
 }

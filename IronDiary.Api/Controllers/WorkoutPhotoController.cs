@@ -1,6 +1,9 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class WorkoutPhotoController : ControllerBase
@@ -16,6 +19,7 @@ public class WorkoutPhotoController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPhotos()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var photos = await _context.WorkoutPhotos
             .ToListAsync();
         return Ok(photos);
@@ -24,6 +28,7 @@ public class WorkoutPhotoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePhoto(WorkoutPhoto photo)
     {
+        photo.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.WorkoutPhotos.Add(photo);
         await _context.SaveChangesAsync();
         return Ok(photo);

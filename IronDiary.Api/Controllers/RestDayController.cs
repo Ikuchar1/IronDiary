@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class RestDayController : ControllerBase
@@ -16,7 +19,9 @@ public class RestDayController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetRestDays()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var restDays = await _context.RestDays
+            .Where(r => r.UserId == userId)
             .ToListAsync();
         return Ok(restDays);
     }
@@ -24,6 +29,7 @@ public class RestDayController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateRestDay(RestDay restDay)
     {
+        restDay.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.RestDays.Add(restDay);
         await _context.SaveChangesAsync();
         return Ok(restDay);
