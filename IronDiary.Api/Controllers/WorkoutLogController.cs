@@ -49,6 +49,12 @@ public class WorkoutLogController : ControllerBase
             return NotFound();
         }
 
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
+        }
+
         return Ok(log);
     }
 
@@ -61,6 +67,12 @@ public class WorkoutLogController : ControllerBase
         if(log == null)
         {
             return NotFound();
+        }
+
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
         }
 
         try

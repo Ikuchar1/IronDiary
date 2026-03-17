@@ -45,6 +45,12 @@ public class WorkoutPhotoController : ControllerBase
             return NotFound();
         }
 
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
+        }
+
         return Ok(photo);
     }
 
@@ -57,6 +63,12 @@ public class WorkoutPhotoController : ControllerBase
         if(photo == null)
         {
             return NotFound();
+        }
+
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
         }
 
         try

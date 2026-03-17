@@ -46,6 +46,12 @@ public class RestDayController : ControllerBase
             return NotFound();
         }
 
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
+        }
+
         return Ok(restDay);
     }
 
@@ -53,11 +59,18 @@ public class RestDayController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRestDayById(int id)
     {
+
         var restDay = await _context.RestDays.FindAsync(id);
 
         if(restDay == null)
         {
             return NotFound();
+        }
+
+        //make sure the it belongs to current user
+        if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return Forbid();
         }
 
         try
