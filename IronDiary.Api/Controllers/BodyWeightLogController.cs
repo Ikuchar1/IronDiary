@@ -61,7 +61,7 @@ public class BodyWeightLogController : ControllerBase
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        catch(Exception ex)
+        catch(Exception)
         {
             // Log the exception (not implemented here)
             return StatusCode(500, "An error occurred while deleting the body weight log.");
