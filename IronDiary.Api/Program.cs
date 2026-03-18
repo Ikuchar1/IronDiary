@@ -75,6 +75,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(FileOptions =>
+{
+    FileOptions.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 
 //build the app with services from above
 var app = builder.Build();
@@ -90,6 +100,7 @@ if (app.Environment.IsDevelopment())
     app.MapControllers();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseCors();
 
 }
 
