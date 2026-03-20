@@ -3,11 +3,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule, MatToolbar } from '@angular/material/toolbar';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
+import { NgOptimizedImage } from '@angular/common';
 
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
+  imports: [RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, NgOptimizedImage],
   standalone: true,
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
