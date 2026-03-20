@@ -20,4 +20,8 @@ export class DashboardComponent implements OnInit {
     this.token = this.authService.getToken() || 'No token found';
   }
 
+  logout() {
+    this.authService.logout();
+  }
+
 }

@@ -1,0 +1,12 @@
+<mat-toolbar>
+  <span class="brand" routerLink="/home">IronDiary</span>
+  <span class="spacer"></span>
+  <a mat-button routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a>
+
+  @if (isLoggedIn()) {
+    <button mat-button (click)="logout()">Logout</button>
+  } @else {
+    <a mat-button routerLink="/login">Login</a>
+    <a mat-button routerLink="/register">Register</a>
+  }
+</mat-toolbar>
