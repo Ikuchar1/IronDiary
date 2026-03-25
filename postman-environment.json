@@ -1,0 +1,14 @@
+{
+  "id": "local-env",
+  "name": "IronDiary Local",
+  "values": [
+    { "key": "base_url", "value": "http://localhost:5092", "enabled": true },
+    { "key": "token", "value": "", "enabled": true },
+    { "key": "test_email", "value": "testuser@irondiary.test", "enabled": true },
+    { "key": "test_password", "value": "Test@1234!", "enabled": true },
+    { "key": "workout_log_id", "value": "", "enabled": true },
+    { "key": "body_weight_log_id", "value": "", "enabled": true },
+    { "key": "rest_day_id", "value": "", "enabled": true },
+    { "key": "workout_photo_id", "value": "", "enabled": true }
+  ]
+}

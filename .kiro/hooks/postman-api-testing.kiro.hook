@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "API Postman Testing",
+  "description": "Runs the IronDiary Postman collection locally via Newman against localhost:5092",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "/Users/ikuchar/.nvm/versions/node/v22.14.0/bin/newman run /Users/ikuchar/Desktop/projects/IronDiary/postman-collection.json --environment /Users/ikuchar/Desktop/projects/IronDiary/postman-environment.json",
+    "timeout": 120
+  }
+}

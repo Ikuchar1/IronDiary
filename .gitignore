@@ -426,3 +426,5 @@ dist/
 
 # ASP.NET secrets (IMPORTANT - keeps your DB credentials out of GitHub)
 appsettings.Development.json
+
+.postman.json
