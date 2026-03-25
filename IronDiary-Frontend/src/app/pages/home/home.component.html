@@ -1,1 +1,127 @@
-<p>home works!</p>
+<section class="home-page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="logo-area">
+      <div class="logo-plate">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="10" width="3" height="4" rx="1"/>
+          <rect x="19" y="10" width="3" height="4" rx="1"/>
+          <rect x="5" y="8" width="2" height="8" rx="1"/>
+          <rect x="17" y="8" width="2" height="8" rx="1"/>
+          <rect x="7" y="11" width="10" height="2" rx="0.5"/>
+        </svg>
+      </div>
+      <span class="brand-name">IronDiary</span>
+    </div>
+
+    <h1 class="headline">
+      Train hard.<br><span class="accent">Track everything.</span>
+    </h1>
+
+    <p class="subheading">
+      A personal fitness journal built for consistency. Log your sessions,
+      track your weight, and watch your progress build over time.
+    </p>
+
+    <div class="cta-row">
+      <button class="btn-primary" (click)="navigateToRegister()">Get started</button>
+      <button class="btn-secondary" (click)="navigateToLogin()">Sign in</button>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">Everything you need,<br>nothing you don't.</h2>
+
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="10" width="3" height="4" rx="1"/>
+            <rect x="19" y="10" width="3" height="4" rx="1"/>
+            <rect x="5" y="8" width="2" height="8" rx="1"/>
+            <rect x="17" y="8" width="2" height="8" rx="1"/>
+            <line x1="7" y1="12" x2="17" y2="12"/>
+          </svg>
+        </div>
+        <h3>Session logging</h3>
+        <p>Log Push, Pull, and Legs sessions with notes. Keep a record of every training day.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 17 7 9 11 13 15 7 19 12"/>
+          </svg>
+        </div>
+        <h3>Bodyweight tracker</h3>
+        <p>Chart your weight over time. Spot trends and stay on top of your progress.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </div>
+        <h3>Progress photos</h3>
+        <p>Attach photos to your sessions and compare side-by-side to see real change.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <h3>Streak tracking</h3>
+        <p>Build a streak and keep your momentum going. Rest days count too.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section section-last">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">Up and running in minutes.</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <h3>Create your account</h3>
+          <p>Sign up with an email and password. Your data is private and tied to your account only.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <h3>Log your first session</h3>
+          <p>Choose Push, Pull, or Legs, or mark a rest day. Add notes or photos to capture the details.</p>        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <h3>Track your progress</h3>
+          <p>Check your bodyweight chart, browse your photo history, and watch your streak grow day by day.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>

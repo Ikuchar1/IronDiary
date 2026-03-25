@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap');
+
+$cyan: #00BCD4;
+$orange: #d85a33;
+$bg: #1a1a1a;
+$surface: #222222;
+$border: rgba(255, 255, 255, 0.08);
+$text-primary: #f0f0f0;
+$text-muted: rgba(255, 255, 255, 0.5);
+
+.home-page {
+  font-family: 'DM Sans', sans-serif;
+  background: $bg;
+  color: $text-primary;
+  padding: 0 48px 80px;
+}
+
+// ── Hero ──────────────────────────────────────────────
+.hero {
+  padding: 80px 0 72px;
+  text-align: center;
+  border-bottom: 1px solid $border;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.logo-plate {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: $cyan;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    fill: #0a0a0a;
+  }
+}
+
+.brand-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  color: $text-primary;
+}
+
+.headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 6vw, 58px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin: 0 0 20px;
+
+  .accent {
+    color: $cyan;
+  }
+}
+
+.subheading {
+  font-size: 17px;
+  font-weight: 300;
+  color: $text-muted;
+  max-width: 460px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: $cyan;
+  color: #0a0a0a;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: opacity 0.15s ease;
+
+  &:hover { opacity: 0.88; }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: $text-primary;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 400;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s ease;
+
+  &:hover { border-color: rgba(255, 255, 255, 0.4); }
+}
+
+// ── Shared section styles ─────────────────────────────
+.section {
+  padding: 64px 0;
+  border-bottom: 1px solid $border;
+
+  &.section-last {
+    border-bottom: none;
+  }
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: $cyan;
+  margin: 0 0 12px;
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  margin: 0 0 48px;
+}
+
+// ── Features grid ─────────────────────────────────────
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: $border;
+  border: 1px solid $border;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.feature-card {
+  background: $surface;
+  padding: 28px 24px;
+}
+
+.feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: $cyan;
+  }
+}
+
+.feature-card h3 {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 8px;
+}
+
+.feature-card p {
+  font-size: 13px;
+  font-weight: 300;
+  color: $text-muted;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ── How it works ──────────────────────────────────────
+.steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 28px 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.step-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 48px;
+  color: $orange;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 48px;
+  text-align: right;
+}
+
+.step-body h3 {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 4px 0 8px;
+}
+
+.step-body p {
+  font-size: 14px;
+  font-weight: 300;
+  color: $text-muted;
+  line-height: 1.65;
+  margin: 0;
+}
