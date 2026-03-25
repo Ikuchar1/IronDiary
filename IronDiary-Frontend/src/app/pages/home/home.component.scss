@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap');
 
 $cyan: #00BCD4;
-$orange: #d85a33;
+$orange: #f98e39;
 $bg: #1a1a1a;
 $surface: #222222;
 $border: rgba(255, 255, 255, 0.08);
@@ -32,20 +32,10 @@ $text-muted: rgba(255, 255, 255, 0.5);
   margin-bottom: 32px;
 }
 
-.logo-plate {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  background: $cyan;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 28px;
-    height: 28px;
-    fill: #0a0a0a;
-  }
+.logo-img {
+  width: 240px;
+  object-fit: contain;
+  margin-bottom:-50px;
 }
 
 .brand-name {
@@ -53,6 +43,16 @@ $text-muted: rgba(255, 255, 255, 0.5);
   font-size: 26px;
   letter-spacing: -0.5px;
   color: $text-primary;
+}
+
+.app-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 75px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: $orange;
+  margin: 0 0 16px;
+  text-transform: uppercase;
 }
 
 .headline {
