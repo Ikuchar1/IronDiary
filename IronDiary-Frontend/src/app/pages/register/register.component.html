@@ -1,20 +1,41 @@
-<div>
-  <h2>Register</h2>
-  <form (ngSubmit)="onRegister()">
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" [(ngModel)]="email" name="email" required>
-    </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" [(ngModel)]="password" name="password" required>
-    </div>
-    <div>
-      <label for="confirmPassword">Confirm Password:</label>
-      <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required>
-    </div>
-    <button type="submit">Register</button>
-  </form>
-  <p *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</p>
-  <p>Already have an account? <a routerLink="/login">Login here</a></p>
+<div class="register-page">
+  <mat-card class="register-card">
+
+    <mat-card-header>
+      <mat-card-title>Create an account</mat-card-title>
+      <mat-card-subtitle>Start tracking your progress today</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onRegister()">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="email" name="email" placeholder="you@example.com" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" [(ngModel)]="password" name="password" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+        </mat-form-field>
+
+        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+
+        <button mat-flat-button color="primary" type="submit" class="full-width submit-btn">
+          Register
+        </button>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-footer>
+      <p class="footer-text">Already have an account? <a routerLink="/login">Login here</a></p>
+    </mat-card-footer>
+
+  </mat-card>
 </div>

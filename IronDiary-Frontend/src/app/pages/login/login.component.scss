@@ -1,17 +1,19 @@
+@use '../../../styles/variables' as *;
+
 .login-page {
   min-height: calc(100vh - 64px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a1a1a;
+  background: $bg;
   padding: 24px;
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: #222222 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: $surface !important;
+  border: 1px solid $border !important;
   border-radius: 12px !important;
   padding: 8px 8px 16px;
 }
@@ -24,12 +26,12 @@ mat-card-header {
 mat-card-title {
   font-size: 24px !important;
   font-weight: 400 !important;
-  color: #f0f0f0 !important;
+  color: $text-primary !important;
 }
 
 mat-card-subtitle {
   font-size: 14px !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: $text-muted !important;
   margin-top: 4px !important;
 }
 
@@ -49,13 +51,13 @@ mat-card-footer {
 
 .footer-text {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: $text-muted;
   text-align: center;
   margin: 16px 0 0;
 }
 
 .footer-text a {
-  color: #00BCD4;
+  color: $cyan;
   text-decoration: none;
 }
 
