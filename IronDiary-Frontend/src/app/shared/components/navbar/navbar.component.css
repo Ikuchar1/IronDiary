@@ -2,18 +2,28 @@
   flex: 1 1 auto;
 }
 
-.brand {
-  font-size: 1.2rem;
-  font-weight: bold;
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
+}
+
+.logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: #f0f0f0;
 }
 
 .active-link {
   color: var(--mat-sys-primary);
   font-weight: bold;
-}
-
-.logo {
-  height: 40px;
-  cursor: pointer;
 }

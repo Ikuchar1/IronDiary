@@ -5,7 +5,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
 @use '@angular/material' as mat;
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
 
 html {
     @include mat.theme((
