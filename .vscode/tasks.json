@@ -1,0 +1,86 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Postgres",
+			"type": "shell",
+			"command": "brew services list | grep -q '^postgresql@14\\s\\+started' || brew services start postgresql@14",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Run API",
+			"type": "shell",
+			"command": "dotnet run",
+			"options": {
+				"cwd": "${workspaceFolder}/IronDiary.Api"
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Run Frontend",
+			"type": "shell",
+			"command": "npm run start",
+			"options": {
+				"cwd": "${workspaceFolder}/IronDiary-Frontend"
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Local Start Up",
+			"dependsOn": [
+				"Start Postgres",
+				"Run API",
+				"Run Frontend"
+			],
+			"dependsOrder": "parallel"
+		},
+		{
+			"label": "Stop Postgres",
+			"type": "shell",
+			"command": "brew services stop postgresql@14",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Stop API",
+			"type": "shell",
+			"command": "pkill -f 'dotnet run' || true",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Stop Frontend",
+			"type": "shell",
+			"command": "pkill -f 'ng serve' || true",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Local Shut Down",
+			"dependsOn": [
+				"Stop Frontend",
+				"Stop API",
+				"Stop Postgres"
+			],
+			"dependsOrder": "sequence",
+			"problemMatcher": []
+		}
+	]
+}

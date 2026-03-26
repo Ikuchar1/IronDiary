@@ -6,16 +6,17 @@
   font-family: 'DM Sans', sans-serif;
   background: $bg;
   color: $text-primary;
-  padding: 0 48px 80px;
+  padding: 0px 48px 80px;
 }
 
 // ── Hero ──────────────────────────────────────────────
 .hero {
-  padding: 80px 0 72px;
+  padding: 0px 0 56px;
   text-align: center;
   border-bottom: 1px solid $border;
   max-width: 680px;
   margin: 0 auto;
+
 }
 
 .logo-area {
@@ -41,7 +42,7 @@
 
 .app-name {
   font-family: 'DM Serif Display', serif;
-  font-size: 75px;
+  font-size: 60px;
   font-weight: 400;
   letter-spacing: 1px;
   color: $orange;
