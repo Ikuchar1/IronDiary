@@ -26,9 +26,23 @@ public class WorkoutPhotoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePhoto(WorkoutPhoto photo)
+    public async Task<IActionResult> CreatePhoto(CreateWorkoutPhotoDto dto)
     {
-        photo.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var logExists = await _context.WorkoutLogs
+            .AnyAsync(w => w.Id == dto.WorkoutLogId && w.UserId == userId);
+
+        if (!logExists)
+            return BadRequest("WorkoutLog not found or does not belong to you.");
+
+        var photo = new WorkoutPhoto
+        {
+            Url = dto.Url,
+            WorkoutLogId = dto.WorkoutLogId,
+            UserId = userId
+        };
+
         _context.WorkoutPhotos.Add(photo);
         await _context.SaveChangesAsync();
         return Ok(photo);

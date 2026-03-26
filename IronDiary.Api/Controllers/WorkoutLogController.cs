@@ -95,8 +95,12 @@ public class WorkoutLogController : ControllerBase
     [HttpGet("range")]
     public async Task<IActionResult> GetWorkoutLogsByDateRange ([FromQuery]DateTime startDate, [FromQuery]DateTime endDate)
     {
+        var start = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+        var end = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var logs = await _context.WorkoutLogs
-            .Where(w => w.Date >= startDate && w.Date <= endDate)
+            .Where(w => w.UserId == userId && w.Date >= start && w.Date <= end)
             .Include(w => w.Photos)
             .OrderByDescending(w => w.Date)
             .ToListAsync();

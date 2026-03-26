@@ -8,18 +8,16 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
-
 //allows it to deal with cycles in object graphs (Ex: WorkoutLog has a collection of WorkoutPhotos, and each WorkoutPhoto has a reference back to its WorkoutLog)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = 
+        options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    });builder.Services.AddEndpointsApiExplorer();
+    });
+
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -75,9 +73,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddCors(FileOptions =>
+builder.Services.AddCors(options =>
 {
-    FileOptions.AddDefaultPolicy(policy =>
+    options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
@@ -89,22 +87,21 @@ builder.Services.AddCors(FileOptions =>
 //build the app with services from above
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapControllers();
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseCors();
-
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 
 
 
