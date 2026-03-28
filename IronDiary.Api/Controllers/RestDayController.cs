@@ -17,16 +17,6 @@ public class RestDayController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetRestDays()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var restDays = await _context.RestDays
-            .Where(r => r.UserId == userId)
-            .ToListAsync();
-        return Ok(restDays);
-    }
-
-    [HttpGet]
     public async Task<ActionResult<IEnumerable<RestDayDto>>> GetAll()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -40,7 +30,7 @@ public class RestDayController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(logs);
+        return Ok(restDays);
     }
 
     [HttpPost]
@@ -54,7 +44,12 @@ public class RestDayController : ControllerBase
         restDay.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.RestDays.Add(restDay);
         await _context.SaveChangesAsync();
-        return Ok(restDay);
+        return Ok(new RestDayDto
+        {
+            Id = restDay.Id,
+            Note = restDay.Note,
+            Date = restDay.Date
+        });
     }
 
     //get by id
@@ -74,7 +69,12 @@ public class RestDayController : ControllerBase
             return Forbid();
         }
 
-        return Ok(restDay);
+        return Ok(new RestDayDto
+        {
+            Id = restDay.Id,
+            Note = restDay.Note,
+            Date = restDay.Date
+        });
     }
 
     //delete by id

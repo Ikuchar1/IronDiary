@@ -126,8 +126,14 @@ public class WorkoutLogController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var logs = await _context.WorkoutLogs
             .Where(w => w.UserId == userId && w.Date >= start && w.Date <= end)
-            .Include(w => w.Photos)
             .OrderByDescending(w => w.Date)
+            .Select(w => new WorkoutLogDto
+            {
+                Id = w.Id,
+                Type = w.Type,
+                Description = w.Description,
+                Date = w.Date
+            })
             .ToListAsync();
 
         return Ok(logs);

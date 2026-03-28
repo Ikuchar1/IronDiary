@@ -22,8 +22,15 @@ public class BodyWeightLogController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var logs = await _context.BodyWeightLogs
-            .Where(w => w.UserId == userId)?.ToListAsync();
-        
+            .Where(w => w.UserId == userId)
+            .Select(w => new BodyWeightLogDto
+            {
+                Id = w.Id,
+                Weight = w.Weight,
+                Date = w.Date
+            })
+            .ToListAsync();
+
         return Ok(logs);
 
     }
@@ -40,7 +47,12 @@ public class BodyWeightLogController : ControllerBase
         log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.BodyWeightLogs.Add(log);
         await _context.SaveChangesAsync();
-        return Ok(log);
+        return Ok(new BodyWeightLogDto
+        {
+            Id = log.Id,
+            Weight = log.Weight,
+            Date = log.Date
+        });
     }
 
     //get by id
@@ -60,7 +72,12 @@ public class BodyWeightLogController : ControllerBase
             return Forbid();
         }
 
-        return Ok(log);
+        return Ok(new BodyWeightLogDto
+        {
+            Id = log.Id,
+            Weight = log.Weight,
+            Date = log.Date
+        });
     }
 
     //delete by id
