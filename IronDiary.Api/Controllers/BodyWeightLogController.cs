@@ -16,19 +16,27 @@ public class BodyWeightLogController : ControllerBase
         _context = context;
     }
 
+
     [HttpGet]
-    public async Task<IActionResult> GetBodyWeightLogs()
+    public async Task<ActionResult<IEnumerable<BodyWeightLogDto>>> GetAll()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var logs = await _context.BodyWeightLogs
-            .Where(w => w.UserId == userId)
-            .ToListAsync();
+            .Where(w => w.UserId == userId)?.ToListAsync();
+        
         return Ok(logs);
+
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateBodyWeightLog(BodyWeightLog log)
+    public async Task<IActionResult> CreateBodyWeightLog(CreateBodyWeightLogDto dto)
     {
+        var log = new BodyWeightLog
+        {
+            Weight = dto.Weight,
+            Date = dto.Date
+        };
+        
         log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.BodyWeightLogs.Add(log);
         await _context.SaveChangesAsync();

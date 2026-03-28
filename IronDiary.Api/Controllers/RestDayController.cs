@@ -26,9 +26,31 @@ public class RestDayController : ControllerBase
         return Ok(restDays);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateRestDay(RestDay restDay)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<RestDayDto>>> GetAll()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var restDays = await _context.RestDays
+            .Where(r => r.UserId == userId)
+            .Select(r => new RestDayDto
+            {
+                Id = r.Id,
+                Note = r.Note,
+                Date = r.Date
+            })
+            .ToListAsync();
+
+        return Ok(logs);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateRestDay(CreateRestDayDto dto)
+    {
+        var restDay = new RestDay
+        {
+            Note = dto.Note,
+            Date = dto.Date
+        };
         restDay.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         _context.RestDays.Add(restDay);
         await _context.SaveChangesAsync();

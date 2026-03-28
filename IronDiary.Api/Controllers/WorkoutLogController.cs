@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 [Authorize]
@@ -17,23 +18,42 @@ public class WorkoutLogController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetLogs()
+    public async Task<ActionResult<IEnumerable<WorkoutLogDto>>> GetAll()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var logs = await _context.WorkoutLogs
-            .Include(w => w.Photos) // Include related photos
-            .Where(w => w.UserId == userId)
+            .Where(l => l.UserId == userId)
+            .Select(l => new WorkoutLogDto
+            {
+                Id = l.Id,
+                Type = l.Type,
+                Description = l.Description,
+                Date = l.Date
+            })
             .ToListAsync();
+
         return Ok(logs);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLog(WorkoutLog log)
+    public async Task<IActionResult> CreateLog(CreateWorkoutLogDto dto)
     {
-        log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var log = new WorkoutLog
+        {
+            Type = dto.Type,
+            Description = dto.Description,
+            Date = dto.Date,
+            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        };
         _context.WorkoutLogs.Add(log);
         await _context.SaveChangesAsync();
-        return Ok(log);
+        return Ok(new WorkoutLogDto
+        {
+            Id = log.Id,
+            Type = log.Type,
+            Description = log.Description,
+            Date = log.Date
+        });
     }
 
     //get by id
@@ -44,18 +64,23 @@ public class WorkoutLogController : ControllerBase
             .Include(w => w.Photos)
             .FirstOrDefaultAsync(w => w.Id == id);
 
-        if (log == null)
-        {
-            return NotFound();
-        }
-
-        //make sure the it belongs to current user
-        if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-        {
+        if (log == null) return NotFound();
+        if (log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
             return Forbid();
-        }
 
-        return Ok(log);
+        return Ok(new WorkoutLogDetailDto
+        {
+            Id = log.Id,
+            Type = log.Type,
+            Description = log.Description,
+            Date = log.Date,
+            Photos = log.Photos.Select(p => new WorkoutPhotoDto
+            {
+                Id = p.Id,
+                Url = p.Url,
+                WorkoutLogId = p.WorkoutLogId
+            }).ToList()
+        });
     }
 
     //delete by id

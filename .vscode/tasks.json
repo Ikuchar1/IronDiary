@@ -43,7 +43,8 @@
 				"Run API",
 				"Run Frontend"
 			],
-			"dependsOrder": "parallel"
+			"dependsOrder": "parallel",
+			"problemMatcher": []
 		},
 		{
 			"label": "Stop Postgres",

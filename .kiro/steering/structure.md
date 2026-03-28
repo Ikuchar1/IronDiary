@@ -23,7 +23,8 @@ Models/                    # EF entity classes (no namespace, implicit usings)
   BodyWeightLog.cs
   RestDay.cs
   WorkoutPhoto.cs
-DTOs/                      # Request/response shapes (LoginDto, RegisterDto)
+DTOs/                      # Request/response shapes (LoginDto, RegisterDto, WorkoutPhotoDto, CreateWorkoutPhotoDto, BodyWeightLogDto, CreateBodyWeightLogDto, WorkoutLogDto, CreateWorkoutLogDto, RestDayDto, CreateRestDayDto)
+
 Migrations/                # EF Core auto-generated migrations
 Program.cs                 # App bootstrap, service registration, middleware pipeline
 appsettings.json           # JWT + DB config
