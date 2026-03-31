@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto } from '../models/workout-log.model';
 
 @Injectable({ providedIn: 'root' })
 export class WorkoutLogService {
-  private apiUrl = 'http://localhost:5092/api/workoutlog';
+  private apiUrl = `${environment.apiUrl}/workoutlog`;
 
   constructor(private http: HttpClient) {}
 
