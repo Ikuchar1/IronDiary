@@ -4,6 +4,7 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
 @use '@angular/material' as mat;
+@use './styles/variables' as *;
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
 
@@ -26,9 +27,9 @@ html {
 }
 
 body {
-    background-color: #2b2b2b;
-    color: white;
-    font-family: Roboto, sans-serif;
+  background-color: $bg;
+  color: $text-primary;
+  font-family: 'DM Sans', sans-serif;
 }
 
 html, body {
