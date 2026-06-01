@@ -1,4 +1,4 @@
-# IronDiary — Project Context
+# IronDiary — Project Context - Last Updated June 1st 2026
 
 ## Overview
 Personal fitness journal web app. Users log workouts (freeform type — Push/Pull/Legs or anything else), rest days, bodyweight entries, and progress photos. Features: streak tracking, bodyweight chart, progress photo grid. Deployed as a mobile-friendly web app for gym use.
@@ -12,7 +12,7 @@ IronDiary/
 
 ## Tech Stack
 - **Backend**: ASP.NET Core Web API, .NET 9, C#
-- **Database**: PostgreSQL (local via Homebrew, managed with TablePlus)
+- **Database**: PostgreSQL @14 (local via Homebrew, managed with TablePlus)
 - **ORM**: Entity Framework Core 9
 - **Auth**: ASP.NET Core Identity + JWT Bearer tokens (1-day expiry)
 - **Frontend**: Angular 19, standalone components, Angular Material
