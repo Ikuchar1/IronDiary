@@ -77,7 +77,6 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
 
 ### Known Backend Issues
-- `WorkoutPhotoController.GetPhotos()` (GET all) does **not** filter by `UserId` — returns all photos in the DB
 - No UPDATE (PUT) endpoints on any controller
 
 ---
@@ -165,6 +164,27 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 **Built:** home, login, register, dashboard
 **To build:** log, bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
+
+---
+
+## Backlog / Next Steps
+
+> **Rule:** Once an item below is fully implemented, remove it from this list.
+
+### Bug Fixes
+- [ ] Dashboard streak logic only counts `WorkoutLog` dates, not rest days
+
+### Pages to Build
+- [ ] `/log` — create and view workout logs (uses `WorkoutLogService`)
+- [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
+- [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
+- [ ] `/profile` — user profile page
+
+### Integrations
+- [ ] **Cloudinary** photo hosting — free tier (25GB storage/bandwidth). Flow: user picks a photo on the frontend → upload directly to Cloudinary → get back a URL → save URL via `POST /api/workoutphoto`. No backend model changes needed, `WorkoutPhoto.Url` already stores a string URL. Tackle this when building the `/photos` page.
+
+### Future / Nice to Have
+- [ ] GitHub-style activity graph on dashboard
 
 ---
 

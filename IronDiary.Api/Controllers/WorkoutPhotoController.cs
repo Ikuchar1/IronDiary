@@ -21,6 +21,8 @@ public class WorkoutPhotoController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var photos = await _context.WorkoutPhotos
+            .Where(p => p.UserId == userId)
+            .Select(p => new WorkoutPhotoDto { Id = p.Id, Url = p.Url, WorkoutLogId = p.WorkoutLogId })
             .ToListAsync();
         return Ok(photos);
     }
@@ -45,7 +47,7 @@ public class WorkoutPhotoController : ControllerBase
 
         _context.WorkoutPhotos.Add(photo);
         await _context.SaveChangesAsync();
-        return Ok(photo);
+        return Ok(new WorkoutPhotoDto { Id = photo.Id, Url = photo.Url, WorkoutLogId = photo.WorkoutLogId });
     }
 
     //get by id
@@ -59,13 +61,12 @@ public class WorkoutPhotoController : ControllerBase
             return NotFound();
         }
 
-        //make sure the it belongs to current user
         if(photo.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
             return Forbid();
         }
 
-        return Ok(photo);
+        return Ok(new WorkoutPhotoDto { Id = photo.Id, Url = photo.Url, WorkoutLogId = photo.WorkoutLogId });
     }
 
     //delete by id
