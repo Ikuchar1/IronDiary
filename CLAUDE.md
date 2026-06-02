@@ -11,14 +11,14 @@ IronDiary/
 ```
 
 ## Tech Stack
-- **Backend**: ASP.NET Core Web API, .NET 9, C#
-- **Database**: PostgreSQL @14 (local via Homebrew, managed with TablePlus)
+- **Backend**: ASP.NET Core Web API, .NET 9.0.101, C#
+- **Database**: PostgreSQL 14.18 (local via Homebrew, managed with TablePlus)
 - **ORM**: Entity Framework Core 9
 - **Auth**: ASP.NET Core Identity + JWT Bearer tokens (1-day expiry)
-- **Frontend**: Angular 19, standalone components, Angular Material
+- **Frontend**: Angular 19.2.20 (CLI 19.2.22), standalone components, Angular Material
 - **Theme**: dark cyan `#00BCD4` / orange `#f98e39`, background `#1a1a1a`
 - **Fonts**: DM Serif Display (headings), DM Sans (body)
-- **Deployment**: Railway (API + DB), Netlify or Azure Static Web Apps (frontend)
+- **Deployment**: Local only — PostgreSQL@14 via `brew services start postgresql@14`, API via `dotnet run`, frontend via `ng serve`
 
 ---
 
@@ -63,7 +63,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 | BodyWeightLogController | GET /api/bodyweightlog, POST /api/bodyweightlog, GET /api/bodyweightlog/{id}, DELETE /api/bodyweightlog/{id} |
 | RestDayController | GET /api/restday, POST /api/restday, GET /api/restday/{id}, DELETE /api/restday/{id} |
 
-**Note: No PUT/update endpoints exist on any controller.** The user-provided context said "full CRUD" but update operations have not been implemented.
+**Note: No PUT/update endpoints exist on any controller.**
 
 ### Backend Key Patterns
 - Controllers inject `AppDbContext` directly — no repository or service layer
@@ -73,7 +73,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - All resources filtered by authenticated user's ID from JWT claims
 - JSON configured with `ReferenceHandler.IgnoreCycles` to handle circular nav properties
 - Swagger configured with Bearer auth for testing protected endpoints
-- CORS currently only allows `http://localhost:4200` (update for production)
+- CORS currently only allows `http://localhost:4200`
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
 
 ### Known Backend Issues
@@ -95,7 +95,7 @@ IronDiary-Frontend/src/
 │   │   ├── guards/
 │   │   │   └── auth.guard.ts          ← functional guard; redirects to /login if no token
 │   │   ├── interceptors/
-│   │   │   └── auth.intercepter.ts    ← functional HttpInterceptorFn; attaches Bearer token
+│   │   │   └── auth.interceptor.ts    ← functional HttpInterceptorFn; attaches Bearer token
 │   │   ├── models/
 │   │   │   ├── workout-log.model.ts   ← WorkoutPhotoDto, WorkoutLogDto, WorkoutLogDetailDto, CreateWorkoutLogDto
 │   │   │   ├── body-weight.model.ts   ← BodyWeightLogDto, CreateBodyWeightLogDto
@@ -115,7 +115,7 @@ IronDiary-Frontend/src/
 │           ├── navbar/
 │           └── footer/
 ├── environments/
-│   ├── environment.ts             ← production (apiUrl: 'https://your-railway-url.com/api' — PLACEHOLDER, not yet set)
+│   ├── environment.ts             ← production placeholder (not yet configured — app is local only)
 │   └── environment.development.ts ← local dev (apiUrl: 'http://localhost:5092/api')
 ├── styles/
 │   └── _variables.scss    ← $cyan, $orange, $bg, $surface, $border, $text-primary, $text-muted
@@ -155,8 +155,6 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 - Pages use `.scss`; some older shared components still have `.css` files alongside (do not rename)
 
 ### Known Frontend Issues / Gotchas
-- `auth.intercepter.ts` has a typo in the filename (missing 'p') — do **not** rename without updating all imports (referenced in `app.config.ts`)
-- Unit tests for `WorkoutLogService` hardcode `http://localhost:5092` instead of using the environment variable
 - Production `apiUrl` in `environment.ts` is still a placeholder URL
 - `WorkoutPhotoDto` is defined in `workout-log.model.ts` (not its own file)
 - Dashboard streak logic only counts `WorkoutLog` dates, not rest days

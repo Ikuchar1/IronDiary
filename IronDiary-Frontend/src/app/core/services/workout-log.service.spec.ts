@@ -4,12 +4,13 @@ import { provideHttpClient } from '@angular/common/http';
 
 import { WorkoutLogService } from './workout-log.service';
 import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto } from '../models/workout-log.model';
+import { environment } from '../../../environments/environment';
 
 describe('WorkoutLogService', () => {
   let service: WorkoutLogService;
   let httpMock: HttpTestingController;
 
-  const apiUrl = 'http://localhost:5092/api/workoutlog';
+  const apiUrl = `${environment.apiUrl}/workoutlog`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
