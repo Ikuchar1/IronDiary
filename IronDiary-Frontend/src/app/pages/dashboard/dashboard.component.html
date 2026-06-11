@@ -4,7 +4,8 @@
   <mat-card class="stat-card streak-card">
     <mat-card-content>
       <p class="stat-label">Current Streak</p>
-      <p class="stat-value">{{ streak }}<span class="stat-unit"> days</span></p>
+      <p class="stat-value">{{ streakDays }}<span class="stat-unit"> days</span></p>
+      <p class="stat-description">{{ workoutSessions }} workout{{ workoutSessions === 1 ? '' : 's' }} this streak</p>
     </mat-card-content>
   </mat-card>
 

@@ -156,7 +156,6 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 ### Known Frontend Issues / Gotchas
 - Production `apiUrl` in `environment.ts` is still a placeholder URL
 - `WorkoutPhotoDto` is defined in `workout-log.model.ts` (not its own file)
-- Dashboard streak logic only counts `WorkoutLog` dates, not rest days
 
 ---
 
@@ -170,9 +169,6 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 ## Backlog / Next Steps
 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
-
-### Bug Fixes
-- [ ] Dashboard streak logic only counts `WorkoutLog` dates, not rest days
 
 ### Pages to Build
 - [ ] `/log` — create and view workout logs (uses `WorkoutLogService`)
