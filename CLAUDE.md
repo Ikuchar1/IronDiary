@@ -210,6 +210,18 @@ ng generate component pages/<name>     # generate new page component
 
 ---
 
+## Git Workflow (enforce these)
+1. **Size decides the flow:**
+   - **Trivial / quick changes → commit straight to `main`, no branch, no PR.** Examples: typos, comment/doc tweaks, a one-line fix, a small style/CSS nudge, a config or version bump. These don't need review.
+   - **Medium or larger changes → branch + PR.** Examples: a new feature or page, logic/behavior changes, anything touching multiple files, anything with new tests, or anything you'd want a second set of eyes on. These get reviewed via a PR.
+   - When unsure which bucket a change falls in, treat it as medium and branch.
+2. For branch + PR work: at the **start** of the task create a branch off `main` before the first commit. Naming: `feature/<short-desc>` for new work, `fix/<short-desc>` for bug fixes (e.g. `fix/streak-rest-days`).
+3. `git switch -c <branch>` carries uncommitted changes onto the new branch, so it's fine to branch even after editing — just always branch before the first commit.
+4. Commit on the branch, push with `git push -u origin <branch>`, then open a PR for review (use `gh pr create`). Do not merge to `main` without the user's go-ahead.
+5. Only commit/push when the user asks.
+
+---
+
 ## Architecture Rules (enforce these)
 1. Never return raw EF model instances from controllers — always map to a DTO
 2. Never pass EF models to/from Angular — use the TypeScript interfaces in `core/models/`
