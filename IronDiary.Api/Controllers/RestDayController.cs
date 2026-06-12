@@ -36,12 +36,20 @@ public class RestDayController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateRestDay(CreateRestDayDto dto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        //ADR-0002: a date with a workout can't also be a rest day
+        if (await SameDayRules.HasWorkoutLogOnDateAsync(_context, userId, dto.Date))
+        {
+            return Conflict(SameDayRules.RestDayConflictMessage);
+        }
+
         var restDay = new RestDay
         {
             Note = dto.Note,
             Date = dto.Date
         };
-        restDay.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        restDay.UserId = userId;
         _context.RestDays.Add(restDay);
         await _context.SaveChangesAsync();
         return Ok(new RestDayDto
