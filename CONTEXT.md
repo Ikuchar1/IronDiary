@@ -12,8 +12,12 @@ _Avoid_: Workout, session record, entry
 A single freeform label describing what a Workout Log was (e.g. "Push", "Pull", "Legs", "Yoga"). It is one label per workout, chosen freely by the user — never a constrained enum, and never a structured set of muscle groups.
 _Avoid_: Category, split, muscle group, body part, tag
 
+**Journal Entry**:
+A dated record in the journal — either a Workout Log or a Rest Day. The term for items in any combined, mixed-type listing.
+_Avoid_: Entry (unqualified), log item, record
+
 **Rest Day**:
-A dated record marking a day with no workout, with an optional Note. Distinct from simply having no Workout Log on that date.
+A dated record marking a day with no workout, with an optional Note. Distinct from simply having no Workout Log on that date. A Rest Day cannot be added to a date that has a Workout Log; logging a workout on a rest date overrides (removes) the Rest Day. Duplicate Rest Days on one date are tolerated and have no extra effect.
 _Avoid_: Off day, break
 
 **Streak**:

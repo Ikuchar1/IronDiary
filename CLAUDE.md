@@ -171,13 +171,23 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/log` — create and view workout logs (uses `WorkoutLogService`)
+- [ ] `/log` — **next up; scope agreed 2026-06-11** (see CONTEXT.md + ADR-0002):
+  - Combined newest-first timeline of Journal Entries (Workout Logs + Rest Days)
+  - Routes: `/log` (list), `/log/new` (form with Workout/Rest toggle), `/log/workout/:id`, `/log/rest/:id` (detail + edit)
+  - Full CRUD: requires new `PUT /api/workoutlog/{id}` and `PUT /api/restday/{id}` endpoints + service methods
+  - Same-day rules (enforced in API, POST and PUT alike): workout on a rest date deletes the Rest Day; rest day on a workout date → 409; duplicate Rest Days tolerated
+  - New `IronDiary.Api.Tests` xUnit project (WebApplicationFactory) covering the same-day invariants
+  - Photos: detail view displays existing photos; upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
 
 ### Integrations
 - [ ] **Cloudinary** photo hosting — free tier (25GB storage/bandwidth). Flow: user picks a photo on the frontend → upload directly to Cloudinary → get back a URL → save URL via `POST /api/workoutphoto`. No backend model changes needed, `WorkoutPhoto.Url` already stores a string URL. Tackle this when building the `/photos` page.
+
+### Chores / Refactors
+- [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
+- [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard
