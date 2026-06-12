@@ -170,13 +170,19 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
+### In Progress — same-day rules + edit endpoints (backend, scoped 2026-06-11)
+PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-slice issues, all labeled `ready-for-agent`:
+- [ ] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — no blockers, start here
+- [ ] #4 — Rest Day creation on a workout date → 409; duplicates tolerated (blocked by #3)
+- [ ] #5 — Workout creation overrides same-date Rest Day + override indicator in a write-result DTO; frontend service updated (blocked by #3)
+- [ ] #6 — PUT workout log with same rules; updates the stale "no PUT endpoints" notes in this file (blocked by #5)
+- [ ] #7 — PUT rest day with same rules (blocked by #4)
+
 ### Pages to Build
-- [ ] `/log` — **next up; scope agreed 2026-06-11** (see CONTEXT.md + ADR-0002):
+- [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:
   - Combined newest-first timeline of Journal Entries (Workout Logs + Rest Days)
   - Routes: `/log` (list), `/log/new` (form with Workout/Rest toggle), `/log/workout/:id`, `/log/rest/:id` (detail + edit)
-  - Full CRUD: requires new `PUT /api/workoutlog/{id}` and `PUT /api/restday/{id}` endpoints + service methods
-  - Same-day rules (enforced in API, POST and PUT alike): workout on a rest date deletes the Rest Day; rest day on a workout date → 409; duplicate Rest Days tolerated
-  - New `IronDiary.Api.Tests` xUnit project (WebApplicationFactory) covering the same-day invariants
+  - Surfaces the override/409 messaging from issue #2's contracts (e.g. "this replaces your Rest Day")
   - Photos: detail view displays existing photos; upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
