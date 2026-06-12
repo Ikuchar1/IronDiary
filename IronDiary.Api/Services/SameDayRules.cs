@@ -18,4 +18,22 @@ public static class SameDayRules
         var day = date.Date;
         return context.WorkoutLogs.AnyAsync(w => w.UserId == userId && w.Date.Date == day);
     }
+
+    /// <summary>
+    /// Marks the user's Rest Days on the given calendar date for deletion
+    /// (a Workout Log overrides them, ADR-0002). Plural because duplicate
+    /// Rest Days on one date are tolerated. The caller owns SaveChangesAsync
+    /// so the override and the workout write land in one save.
+    /// Returns true when any Rest Day was overridden.
+    /// </summary>
+    public static async Task<bool> OverrideRestDaysOnDateAsync(AppDbContext context, string userId, DateTime date)
+    {
+        var day = date.Date;
+        var restDays = await context.RestDays
+            .Where(r => r.UserId == userId && r.Date.Date == day)
+            .ToListAsync();
+
+        context.RestDays.RemoveRange(restDays);
+        return restDays.Count > 0;
+    }
 }

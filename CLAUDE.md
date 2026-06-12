@@ -172,12 +172,13 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 ### In Progress — same-day rules + edit endpoints (backend, scoped 2026-06-11)
 PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-slice issues, all labeled `ready-for-agent`:
-- [ ] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — no blockers, start here
-- [ ] #4 — Rest Day creation on a workout date → 409; duplicates tolerated (blocked by #3)
-- [ ] #5 — Workout creation overrides same-date Rest Day + override indicator in a write-result DTO; frontend service updated (blocked by #3)
+- [x] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — done, uncommitted
+- [x] #4 — Rest Day creation on a workout date → 409; duplicates tolerated — done, uncommitted
+- [x] #5 — Workout creation overrides same-date Rest Day + override indicator in `WorkoutLogWriteResultDto`; frontend service updated — done 2026-06-11, uncommitted
+- [ ] **Commit #3/#4/#5** — all three slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, one for #5); optionally `/review` first.
 - [ ] #6 — PUT workout log with same rules; updates the stale "no PUT endpoints" notes in this file (blocked by #5)
 - [ ] #7 — PUT rest day with same rules (blocked by #4)
-- [ ] **Manual check — verify the day-grained conflict query against real PostgreSQL.** Why: the integration tests run on SQLite, but `SameDayRules.HasWorkoutLogOnDateAsync` uses `w.Date.Date == day`, and each EF provider translates `.Date` to SQL its own way — SQLite passing doesn't prove Npgsql/PostgreSQL handles it the same. How: start Postgres + API (`brew services start postgresql@14`, `dotnet run`), open Swagger at http://localhost:5092/swagger, authorize with a Bearer token, `POST /api/workoutlog` with today's date at some morning time, then `POST /api/restday` for today at a *different* time → expect **409 Conflict** (different times, same calendar day = day-grained works). Then `POST /api/restday` for tomorrow → expect 200. Remove this item once seen working.
+- [ ] **Manual check — verify the day-grained queries against real PostgreSQL.** Why: the integration tests run on SQLite, but `SameDayRules.HasWorkoutLogOnDateAsync` AND `SameDayRules.OverrideRestDaysOnDateAsync` (added in #5) both use `.Date.Date == day`, and each EF provider translates `.Date` to SQL its own way — SQLite passing doesn't prove Npgsql/PostgreSQL handles it the same. How: start Postgres + API (`brew services start postgresql@14`, `dotnet run`), open Swagger at http://localhost:5092/swagger, authorize with a Bearer token, then check both directions: (1) `POST /api/workoutlog` with today's date at some morning time, then `POST /api/restday` for today at a *different* time → expect **409 Conflict** (different times, same calendar day = day-grained works). (2) `POST /api/restday` for tomorrow → expect 200, then `POST /api/workoutlog` for tomorrow at a *different* time → expect 200 with `overrodeRestDay: true`, and `GET /api/restday` shows tomorrow's Rest Day is gone. Remove this item once both are seen working.
 
 ### Pages to Build
 - [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:

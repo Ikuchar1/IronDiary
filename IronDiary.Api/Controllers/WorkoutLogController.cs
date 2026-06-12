@@ -38,21 +38,27 @@ public class WorkoutLogController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateLog(CreateWorkoutLogDto dto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var log = new WorkoutLog
         {
             Type = dto.Type,
             Description = dto.Description,
             Date = dto.Date,
-            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!
+            UserId = userId
         };
+        var overrodeRestDay = await SameDayRules.OverrideRestDaysOnDateAsync(_context, userId, dto.Date);
         _context.WorkoutLogs.Add(log);
         await _context.SaveChangesAsync();
-        return Ok(new WorkoutLogDto
+        return Ok(new WorkoutLogWriteResultDto
         {
-            Id = log.Id,
-            Type = log.Type,
-            Description = log.Description,
-            Date = log.Date
+            Workout = new WorkoutLogDto
+            {
+                Id = log.Id,
+                Type = log.Type,
+                Description = log.Description,
+                Date = log.Date
+            },
+            OverrodeRestDay = overrodeRestDay
         });
     }
 
