@@ -49,18 +49,38 @@ public class WorkoutLogController : ControllerBase
         var overrodeRestDay = await SameDayRules.OverrideRestDaysOnDateAsync(_context, userId, dto.Date);
         _context.WorkoutLogs.Add(log);
         await _context.SaveChangesAsync();
-        return Ok(new WorkoutLogWriteResultDto
-        {
-            Workout = new WorkoutLogDto
-            {
-                Id = log.Id,
-                Type = log.Type,
-                Description = log.Description,
-                Date = log.Date
-            },
-            OverrodeRestDay = overrodeRestDay
-        });
+        return Ok(ToWriteResult(log, overrodeRestDay));
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateLog(int id, CreateWorkoutLogDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var log = await _context.WorkoutLogs
+            .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
+
+        if (log == null) return NotFound();
+
+        log.Type = dto.Type;
+        log.Description = dto.Description;
+        log.Date = dto.Date;
+        var overrodeRestDay = await SameDayRules.OverrideRestDaysOnDateAsync(_context, userId, dto.Date);
+        await _context.SaveChangesAsync();
+
+        return Ok(ToWriteResult(log, overrodeRestDay));
+    }
+
+    private static WorkoutLogWriteResultDto ToWriteResult(WorkoutLog log, bool overrodeRestDay) => new()
+    {
+        Workout = new WorkoutLogDto
+        {
+            Id = log.Id,
+            Type = log.Type,
+            Description = log.Description,
+            Date = log.Date
+        },
+        OverrodeRestDay = overrodeRestDay
+    };
 
     //get by id
     [HttpGet("{id}")]

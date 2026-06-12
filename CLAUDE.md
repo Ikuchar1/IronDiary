@@ -58,12 +58,12 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 | Controller | Endpoints |
 |---|---|
 | AuthController | POST /api/auth/register, POST /api/auth/login |
-| WorkoutLogController | GET /api/workoutlog, POST /api/workoutlog, GET /api/workoutlog/{id}, DELETE /api/workoutlog/{id}, GET /api/workoutlog/range?startDate=&endDate= |
+| WorkoutLogController | GET /api/workoutlog, POST /api/workoutlog, GET /api/workoutlog/{id}, PUT /api/workoutlog/{id}, DELETE /api/workoutlog/{id}, GET /api/workoutlog/range?startDate=&endDate= |
 | WorkoutPhotoController | GET /api/workoutphoto, POST /api/workoutphoto, GET /api/workoutphoto/{id}, DELETE /api/workoutphoto/{id} |
 | BodyWeightLogController | GET /api/bodyweightlog, POST /api/bodyweightlog, GET /api/bodyweightlog/{id}, DELETE /api/bodyweightlog/{id} |
 | RestDayController | GET /api/restday, POST /api/restday, GET /api/restday/{id}, DELETE /api/restday/{id} |
 
-**Note: No PUT/update endpoints exist on any controller.**
+**Note: WorkoutLog is the only resource with a PUT endpoint so far (RestDay's is issue #7).** POST and PUT on WorkoutLog return `WorkoutLogWriteResultDto` (wraps the workout DTO + `OverrodeRestDay` flag, ADR-0002); PUT accepts the same body as create (`CreateWorkoutLogDto`) and returns 404 for nonexistent or other users' ids.
 
 ### Backend Key Patterns
 - Controllers inject `AppDbContext` directly — no repository or service layer
@@ -77,7 +77,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
 
 ### Known Backend Issues
-- No UPDATE (PUT) endpoints on any controller
+- No UPDATE (PUT) endpoint on WorkoutPhoto, BodyWeightLog, or RestDay (RestDay's is issue #7)
 
 ---
 
@@ -101,7 +101,7 @@ IronDiary-Frontend/src/
 │   │   │   └── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
 │   │   └── services/
 │   │       ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
-│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
+│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
 │   │       ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
 │   │       └── rest-day.service.ts
 │   ├── pages/
@@ -175,8 +175,8 @@ PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-
 - [x] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — done, uncommitted
 - [x] #4 — Rest Day creation on a workout date → 409; duplicates tolerated — done, uncommitted
 - [x] #5 — Workout creation overrides same-date Rest Day + override indicator in `WorkoutLogWriteResultDto`; frontend service updated — done 2026-06-11, uncommitted
-- [ ] **Commit #3/#4/#5** — all three slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, one for #5); optionally `/review` first.
-- [ ] #6 — PUT workout log with same rules; updates the stale "no PUT endpoints" notes in this file (blocked by #5)
+- [ ] **Commit #3/#4/#5/#6** — all four slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, one for #5, one for #6); optionally `/review` first.
+- [x] #6 — PUT workout log with same rules; CLAUDE.md "no PUT endpoints" notes updated — done 2026-06-11, uncommitted
 - [ ] #7 — PUT rest day with same rules (blocked by #4)
 - [ ] **Manual check — verify the day-grained queries against real PostgreSQL.** Why: the integration tests run on SQLite, but `SameDayRules.HasWorkoutLogOnDateAsync` AND `SameDayRules.OverrideRestDaysOnDateAsync` (added in #5) both use `.Date.Date == day`, and each EF provider translates `.Date` to SQL its own way — SQLite passing doesn't prove Npgsql/PostgreSQL handles it the same. How: start Postgres + API (`brew services start postgresql@14`, `dotnet run`), open Swagger at http://localhost:5092/swagger, authorize with a Bearer token, then check both directions: (1) `POST /api/workoutlog` with today's date at some morning time, then `POST /api/restday` for today at a *different* time → expect **409 Conflict** (different times, same calendar day = day-grained works). (2) `POST /api/restday` for tomorrow → expect 200, then `POST /api/workoutlog` for tomorrow at a *different* time → expect 200 with `overrodeRestDay: true`, and `GET /api/restday` shows tomorrow's Rest Day is gone. Remove this item once both are seen working.
 

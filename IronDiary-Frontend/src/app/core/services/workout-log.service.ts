@@ -17,6 +17,10 @@ export class WorkoutLogService {
     return this.http.post<WorkoutLogWriteResultDto>(this.apiUrl, dto);
   }
 
+  updateWorkoutLog(id: number, dto: CreateWorkoutLogDto) {
+    return this.http.put<WorkoutLogWriteResultDto>(`${this.apiUrl}/${id}`, dto);
+  }
+
   getWorkoutLogById(id: number) {
     return this.http.get<WorkoutLogDetailDto>(`${this.apiUrl}/${id}`);
   }

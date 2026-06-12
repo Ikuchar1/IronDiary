@@ -61,6 +61,25 @@ describe('WorkoutLogService', () => {
     req.flush(mockResponse);
   });
 
+  it('should PUT an updated workout log and surface the override indicator', () => {
+    const dto: CreateWorkoutLogDto = { type: 'Pull', description: 'Rows', date: '2026-03-05T00:00:00Z' };
+    const mockResponse: WorkoutLogWriteResultDto = {
+      workout: { id: 7, type: 'Pull', description: 'Rows', date: '2026-03-05T00:00:00Z' },
+      overrodeRestDay: true
+    };
+
+    service.updateWorkoutLog(7, dto).subscribe(result => {
+      expect(result).toEqual(mockResponse);
+      expect(result.overrodeRestDay).toBeTrue();
+      expect(result.workout.type).toBe('Pull');
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/7`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(dto);
+    req.flush(mockResponse);
+  });
+
   it('should GET a workout log by id', () => {
     const mockDetail: WorkoutLogDetailDto = {
       id: 1, type: 'Legs', description: 'Leg day', date: '2026-03-03T00:00:00Z', photos: []
