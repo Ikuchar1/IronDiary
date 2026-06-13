@@ -204,6 +204,39 @@ public class WorkoutLogTests : IClassFixture<IronDiaryApiFactory>
     }
 
     [Fact]
+    public async Task UpdatingWorkoutLog_WithoutChangingDate_LeavesRestDaysUntouched()
+    {
+        // ADR-0002 / issue #6: an edit that doesn't move the date must not touch Rest Days.
+        var client = await _factory.CreateAuthenticatedClientAsync();
+        var workoutDate = new DateTime(2026, 5, 24, 8, 0, 0, DateTimeKind.Utc);
+
+        var createResponse = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Description = "Bench", Date = workoutDate });
+        createResponse.EnsureSuccessStatusCode();
+        var created = (await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>())!.Workout;
+
+        // an unrelated Rest Day on a different date that the edit must leave alone
+        var restDayDate = new DateTime(2026, 5, 23, 0, 0, 0, DateTimeKind.Utc);
+        var restDay = await client.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Note = "unrelated rest", Date = restDayDate });
+        restDay.EnsureSuccessStatusCode();
+
+        // edit description only — date unchanged
+        var response = await client.PutAsJsonAsync($"/api/workoutlog/{created.Id}",
+            new CreateWorkoutLogDto { Type = "Push", Description = "Bench + OHP", Date = workoutDate });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.False(result.OverrodeRestDay); // no Rest Day on the (unchanged) workout date
+        Assert.Equal("Bench + OHP", result.Workout.Description);
+
+        var restDays = await client.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(restDays);
+        Assert.Contains(restDays, r => r.Date == restDayDate); // the unrelated Rest Day survives
+    }
+
+    [Fact]
     public async Task UpdatingNonexistentWorkoutLog_ReturnsNotFound()
     {
         var client = await _factory.CreateAuthenticatedClientAsync();

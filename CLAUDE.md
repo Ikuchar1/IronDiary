@@ -48,6 +48,8 @@ IronDiary.Api/
 │   └── RegisterDto.cs
 ├── Data/
 │   └── AppDbContext.cs      ← IdentityDbContext<AppUser>; DbSets: WorkoutLogs, RestDays, BodyWeightLogs, WorkoutPhotos
+├── Rules/
+│   └── SameDayRules.cs      ← static day-grained Journal Entry invariants (ADR-0002), shared by create/edit paths
 ├── Migrations/              ← EF Core migrations — do not manually edit
 └── Program.cs
 ```
@@ -66,7 +68,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 **Note: WorkoutLog and RestDay have PUT endpoints; WorkoutPhoto and BodyWeightLog do not.** PUT accepts the same body as create and returns 404 for nonexistent or other users' ids. Per ADR-0002: POST and PUT on WorkoutLog return `WorkoutLogWriteResultDto` (wraps the workout DTO + `OverrodeRestDay` flag); POST and PUT on RestDay return 409 (displayable message) when the date holds one of the user's Workout Logs.
 
 ### Backend Key Patterns
-- Controllers inject `AppDbContext` directly — no repository or service layer
+- Controllers inject `AppDbContext` directly — no repository or service layer. (Exception: stateless invariant helpers in `Rules/`, e.g. `SameDayRules`, are allowed. They are **static** and take `AppDbContext` as a parameter — not DI-registered services or repositories. Per ADR-0002 they exist so the create and edit paths share one rule and can't drift. The caller still owns `SaveChangesAsync`.)
 - Raw EF models are never returned from controllers; always map to DTOs
 - `WorkoutLogController.GetById` uses `.Include(w => w.Photos)` and returns `WorkoutLogDetailDto`
 - List endpoints return the lightweight DTO (no photos included)
@@ -178,7 +180,7 @@ PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-
 - [ ] **Commit #3/#4/#5/#6/#7** — all five slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, then one each for #5/#6/#7); optionally `/review` first.
 - [x] #6 — PUT workout log with same rules; CLAUDE.md "no PUT endpoints" notes updated — done 2026-06-11, uncommitted
 - [x] #7 — PUT rest day with same rules — done 2026-06-12, uncommitted
-- [ ] **Manual check — verify the day-grained queries against real PostgreSQL.** Why: the integration tests run on SQLite, but `SameDayRules.HasWorkoutLogOnDateAsync` AND `SameDayRules.OverrideRestDaysOnDateAsync` (added in #5) both use `.Date.Date == day`, and each EF provider translates `.Date` to SQL its own way — SQLite passing doesn't prove Npgsql/PostgreSQL handles it the same. How: start Postgres + API (`brew services start postgresql@14`, `dotnet run`), open Swagger at http://localhost:5092/swagger, authorize with a Bearer token, then check both directions: (1) `POST /api/workoutlog` with today's date at some morning time, then `POST /api/restday` for today at a *different* time → expect **409 Conflict** (different times, same calendar day = day-grained works). (2) `POST /api/restday` for tomorrow → expect 200, then `POST /api/workoutlog` for tomorrow at a *different* time → expect 200 with `overrodeRestDay: true`, and `GET /api/restday` shows tomorrow's Rest Day is gone. Remove this item once both are seen working.
+- [x] **Day-grained `.Date` queries verified against real PostgreSQL** — done 2026-06-13. SQLite passing didn't prove Npgsql translates `.Date.Date == day` the same way, so this is now covered by the **`Same-Day Rules (Postgres day-grained)` folder in `postman-collection.json`**: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control. All green against Postgres. Re-run that folder after any change to `SameDayRules`.
 
 ### Pages to Build
 - [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:
