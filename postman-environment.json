@@ -9,6 +9,14 @@
     { "key": "workout_log_id", "value": "", "enabled": true },
     { "key": "body_weight_log_id", "value": "", "enabled": true },
     { "key": "rest_day_id", "value": "", "enabled": true },
-    { "key": "workout_photo_id", "value": "", "enabled": true }
+    { "key": "workout_photo_id", "value": "", "enabled": true },
+    { "key": "wp_workout_id", "value": "", "enabled": true },
+    { "key": "sdr_w1", "value": "", "enabled": true },
+    { "key": "sdr_w2", "value": "", "enabled": true },
+    { "key": "sdr_w3", "value": "", "enabled": true },
+    { "key": "sdr_w4", "value": "", "enabled": true },
+    { "key": "sdr_r1", "value": "", "enabled": true },
+    { "key": "sdr_r3", "value": "", "enabled": true },
+    { "key": "sdr_r4", "value": "", "enabled": true }
   ]
 }
