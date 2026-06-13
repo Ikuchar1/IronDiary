@@ -52,12 +52,29 @@ public class RestDayController : ControllerBase
         restDay.UserId = userId;
         _context.RestDays.Add(restDay);
         await _context.SaveChangesAsync();
-        return Ok(new RestDayDto
+        return Ok(ToDto(restDay));
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateRestDay(int id, CreateRestDayDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var restDay = await _context.RestDays
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
+
+        if (restDay == null) return NotFound();
+
+        //ADR-0002: a date with a workout can't also be a rest day
+        if (await SameDayRules.HasWorkoutLogOnDateAsync(_context, userId, dto.Date))
         {
-            Id = restDay.Id,
-            Note = restDay.Note,
-            Date = restDay.Date
-        });
+            return Conflict(SameDayRules.RestDayConflictMessage);
+        }
+
+        restDay.Note = dto.Note;
+        restDay.Date = dto.Date;
+        await _context.SaveChangesAsync();
+
+        return Ok(ToDto(restDay));
     }
 
     //get by id
@@ -77,12 +94,7 @@ public class RestDayController : ControllerBase
             return Forbid();
         }
 
-        return Ok(new RestDayDto
-        {
-            Id = restDay.Id,
-            Note = restDay.Note,
-            Date = restDay.Date
-        });
+        return Ok(ToDto(restDay));
     }
 
     //delete by id
@@ -116,7 +128,14 @@ public class RestDayController : ControllerBase
             return StatusCode(500, "An error occurred while deleting the rest day.");
         }
 
-        
+
     }
+
+    private static RestDayDto ToDto(RestDay restDay) => new()
+    {
+        Id = restDay.Id,
+        Note = restDay.Note,
+        Date = restDay.Date
+    };
 
 }
