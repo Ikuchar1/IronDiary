@@ -21,6 +21,10 @@ export class RestDayService {
     return this.http.post<RestDayDto>(this.apiUrl, dto);
   }
 
+  update(id: number, dto: CreateRestDayDto) {
+    return this.http.put<RestDayDto>(`${this.apiUrl}/${id}`, dto);
+  }
+
   delete(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

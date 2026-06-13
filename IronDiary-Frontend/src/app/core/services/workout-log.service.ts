@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto } from '../models/workout-log.model';
+import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto, WorkoutLogWriteResultDto } from '../models/workout-log.model';
 
 @Injectable({ providedIn: 'root' })
 export class WorkoutLogService {
@@ -14,7 +14,11 @@ export class WorkoutLogService {
   }
 
   createWorkoutLog(dto: CreateWorkoutLogDto) {
-    return this.http.post<WorkoutLogDto>(this.apiUrl, dto);
+    return this.http.post<WorkoutLogWriteResultDto>(this.apiUrl, dto);
+  }
+
+  updateWorkoutLog(id: number, dto: CreateWorkoutLogDto) {
+    return this.http.put<WorkoutLogWriteResultDto>(`${this.apiUrl}/${id}`, dto);
   }
 
   getWorkoutLogById(id: number) {

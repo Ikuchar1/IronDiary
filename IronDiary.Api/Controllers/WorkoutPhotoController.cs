@@ -63,7 +63,7 @@ public class WorkoutPhotoController : ControllerBase
 
         if(photo.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         return Ok(new WorkoutPhotoDto { Id = photo.Id, Url = photo.Url, WorkoutLogId = photo.WorkoutLogId });
@@ -83,7 +83,7 @@ public class WorkoutPhotoController : ControllerBase
         //make sure the it belongs to current user
         if(photo.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         try

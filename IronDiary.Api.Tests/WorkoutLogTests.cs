@@ -1,0 +1,281 @@
+using System.Net;
+using System.Net.Http.Json;
+
+namespace IronDiary.Api.Tests;
+
+public class WorkoutLogTests : IClassFixture<IronDiaryApiFactory>
+{
+    private readonly IronDiaryApiFactory _factory;
+
+    public WorkoutLogTests(IronDiaryApiFactory factory)
+    {
+        _factory = factory;
+    }
+
+    [Fact]
+    public async Task CreatedWorkoutLog_IsReturnedByGetByIdAndList()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var create = new CreateWorkoutLogDto
+        {
+            Type = "Push",
+            Description = "Bench and overhead press",
+            Date = new DateTime(2026, 6, 10, 0, 0, 0, DateTimeKind.Utc)
+        };
+
+        var createResponse = await client.PostAsJsonAsync("/api/workoutlog", create);
+        Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+        var result = await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        var created = result.Workout;
+        Assert.Equal("Push", created.Type);
+
+        var byId = await client.GetFromJsonAsync<WorkoutLogDetailDto>($"/api/workoutlog/{created.Id}");
+        Assert.NotNull(byId);
+        Assert.Equal(created.Id, byId.Id);
+        Assert.Equal("Push", byId.Type);
+        Assert.Equal("Bench and overhead press", byId.Description);
+
+        var list = await client.GetFromJsonAsync<List<WorkoutLogDto>>("/api/workoutlog");
+        Assert.NotNull(list);
+        Assert.Contains(list, l => l.Id == created.Id && l.Type == "Push");
+    }
+
+    [Fact]
+    public async Task TwoWorkoutLogsOnSameDate_AreBothAccepted()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+        var date = new DateTime(2026, 6, 9, 0, 0, 0, DateTimeKind.Utc);
+
+        var first = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Date = date });
+        var second = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Legs", Date = date });
+
+        Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, second.StatusCode);
+
+        var list = await client.GetFromJsonAsync<List<WorkoutLogDto>>("/api/workoutlog");
+        Assert.NotNull(list);
+        Assert.Equal(2, list.Count(l => l.Date == date));
+    }
+
+    [Fact]
+    public async Task CreatingWorkoutLog_OnDateWithRestDay_DeletesRestDayAndFlagsOverride()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+        var date = new DateTime(2026, 6, 3, 0, 0, 0, DateTimeKind.Utc);
+
+        var restDay = await client.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Note = "planned rest", Date = date });
+        restDay.EnsureSuccessStatusCode();
+
+        var response = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Date = date });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.True(result.OverrodeRestDay);
+        Assert.Equal("Push", result.Workout.Type);
+
+        var restDays = await client.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(restDays);
+        Assert.DoesNotContain(restDays, r => r.Date == date);
+    }
+
+    [Fact]
+    public async Task CreatingWorkoutLog_OnFreeDate_DoesNotFlagOverride()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var response = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Pull", Date = new DateTime(2026, 6, 2, 0, 0, 0, DateTimeKind.Utc) });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.False(result.OverrodeRestDay);
+        Assert.Equal("Pull", result.Workout.Type);
+    }
+
+    [Fact]
+    public async Task CreatingWorkoutLog_DoesNotDeleteAnotherUsersRestDay()
+    {
+        var userA = await _factory.CreateAuthenticatedClientAsync();
+        var userB = await _factory.CreateAuthenticatedClientAsync();
+        var date = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var restDay = await userB.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Note = "B rests", Date = date });
+        restDay.EnsureSuccessStatusCode();
+
+        var response = await userA.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Legs", Date = date });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.False(result.OverrodeRestDay); // user B's Rest Day is not user A's to override
+
+        var userBRestDays = await userB.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(userBRestDays);
+        Assert.Contains(userBRestDays, r => r.Date == date);
+    }
+
+    [Fact]
+    public async Task Override_IsDayGrained_DifferentTimesOnSameDateStillOverride()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var restDay = await client.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Date = new DateTime(2026, 5, 31, 7, 0, 0, DateTimeKind.Utc) });
+        restDay.EnsureSuccessStatusCode();
+
+        var response = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Date = new DateTime(2026, 5, 31, 21, 0, 0, DateTimeKind.Utc) });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.True(result.OverrodeRestDay);
+
+        var restDays = await client.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(restDays);
+        Assert.Empty(restDays);
+    }
+
+    [Fact]
+    public async Task UpdatingWorkoutLog_ChangesFieldsAndReturnsWriteResult()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var createResponse = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Description = "Bench", Date = new DateTime(2026, 5, 30, 0, 0, 0, DateTimeKind.Utc) });
+        createResponse.EnsureSuccessStatusCode();
+        var created = (await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>())!.Workout;
+
+        var newDate = new DateTime(2026, 5, 29, 0, 0, 0, DateTimeKind.Utc);
+        var response = await client.PutAsJsonAsync($"/api/workoutlog/{created.Id}",
+            new CreateWorkoutLogDto { Type = "Pull", Description = "Rows", Date = newDate });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.False(result.OverrodeRestDay);
+        Assert.Equal(created.Id, result.Workout.Id);
+        Assert.Equal("Pull", result.Workout.Type);
+        Assert.Equal("Rows", result.Workout.Description);
+        Assert.Equal(newDate, result.Workout.Date);
+
+        var byId = await client.GetFromJsonAsync<WorkoutLogDetailDto>($"/api/workoutlog/{created.Id}");
+        Assert.NotNull(byId);
+        Assert.Equal("Pull", byId.Type); // edit persisted, not just echoed
+    }
+
+    [Fact]
+    public async Task UpdatingWorkoutLog_OntoDateWithRestDay_DeletesRestDayAndFlagsOverride()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var createResponse = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Date = new DateTime(2026, 5, 28, 0, 0, 0, DateTimeKind.Utc) });
+        createResponse.EnsureSuccessStatusCode();
+        var created = (await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>())!.Workout;
+
+        var restDayDate = new DateTime(2026, 5, 27, 0, 0, 0, DateTimeKind.Utc);
+        var restDay = await client.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Note = "planned rest", Date = restDayDate });
+        restDay.EnsureSuccessStatusCode();
+
+        var response = await client.PutAsJsonAsync($"/api/workoutlog/{created.Id}",
+            new CreateWorkoutLogDto { Type = "Push", Date = restDayDate });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.True(result.OverrodeRestDay);
+        Assert.Equal(restDayDate, result.Workout.Date);
+
+        var restDays = await client.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(restDays);
+        Assert.DoesNotContain(restDays, r => r.Date == restDayDate);
+    }
+
+    [Fact]
+    public async Task UpdatingWorkoutLog_WithoutChangingDate_LeavesRestDaysUntouched()
+    {
+        // ADR-0002 / issue #6: an edit that doesn't move the date must not touch Rest Days.
+        var client = await _factory.CreateAuthenticatedClientAsync();
+        var workoutDate = new DateTime(2026, 5, 24, 8, 0, 0, DateTimeKind.Utc);
+
+        var createResponse = await client.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Push", Description = "Bench", Date = workoutDate });
+        createResponse.EnsureSuccessStatusCode();
+        var created = (await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>())!.Workout;
+
+        // an unrelated Rest Day on a different date that the edit must leave alone
+        var restDayDate = new DateTime(2026, 5, 23, 0, 0, 0, DateTimeKind.Utc);
+        var restDay = await client.PostAsJsonAsync("/api/restday",
+            new CreateRestDayDto { Note = "unrelated rest", Date = restDayDate });
+        restDay.EnsureSuccessStatusCode();
+
+        // edit description only — date unchanged
+        var response = await client.PutAsJsonAsync($"/api/workoutlog/{created.Id}",
+            new CreateWorkoutLogDto { Type = "Push", Description = "Bench + OHP", Date = workoutDate });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>();
+        Assert.NotNull(result);
+        Assert.False(result.OverrodeRestDay); // no Rest Day on the (unchanged) workout date
+        Assert.Equal("Bench + OHP", result.Workout.Description);
+
+        var restDays = await client.GetFromJsonAsync<List<RestDayDto>>("/api/restday");
+        Assert.NotNull(restDays);
+        Assert.Contains(restDays, r => r.Date == restDayDate); // the unrelated Rest Day survives
+    }
+
+    [Fact]
+    public async Task UpdatingNonexistentWorkoutLog_ReturnsNotFound()
+    {
+        var client = await _factory.CreateAuthenticatedClientAsync();
+
+        var response = await client.PutAsJsonAsync("/api/workoutlog/999999",
+            new CreateWorkoutLogDto { Type = "Push", Date = new DateTime(2026, 5, 26, 0, 0, 0, DateTimeKind.Utc) });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdatingAnotherUsersWorkoutLog_ReturnsNotFound()
+    {
+        var userA = await _factory.CreateAuthenticatedClientAsync();
+        var userB = await _factory.CreateAuthenticatedClientAsync();
+        var date = new DateTime(2026, 5, 25, 0, 0, 0, DateTimeKind.Utc);
+
+        var createResponse = await userB.PostAsJsonAsync("/api/workoutlog",
+            new CreateWorkoutLogDto { Type = "Legs", Date = date });
+        createResponse.EnsureSuccessStatusCode();
+        var created = (await createResponse.Content.ReadFromJsonAsync<WorkoutLogWriteResultDto>())!.Workout;
+
+        var response = await userA.PutAsJsonAsync($"/api/workoutlog/{created.Id}",
+            new CreateWorkoutLogDto { Type = "Hacked", Date = date });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var byId = await userB.GetFromJsonAsync<WorkoutLogDetailDto>($"/api/workoutlog/{created.Id}");
+        Assert.NotNull(byId);
+        Assert.Equal("Legs", byId.Type); // user B's log untouched
+    }
+
+    [Fact]
+    public async Task ProtectedEndpoint_WithoutToken_ReturnsUnauthorized()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/workoutlog");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+}

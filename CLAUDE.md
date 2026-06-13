@@ -1,4 +1,4 @@
-# IronDiary — Project Context - Last Updated June 1st 2026
+# IronDiary — Project Context - Last Updated June 12th 2026
 
 ## Overview
 Personal fitness journal web app. Users log workouts (freeform type — Push/Pull/Legs or anything else), rest days, bodyweight entries, and progress photos. Features: streak tracking, bodyweight chart, progress photo grid. Deployed as a mobile-friendly web app for gym use.
@@ -48,6 +48,8 @@ IronDiary.Api/
 │   └── RegisterDto.cs
 ├── Data/
 │   └── AppDbContext.cs      ← IdentityDbContext<AppUser>; DbSets: WorkoutLogs, RestDays, BodyWeightLogs, WorkoutPhotos
+├── Rules/
+│   └── SameDayRules.cs      ← static day-grained Journal Entry invariants (ADR-0002), shared by create/edit paths
 ├── Migrations/              ← EF Core migrations — do not manually edit
 └── Program.cs
 ```
@@ -58,15 +60,15 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 | Controller | Endpoints |
 |---|---|
 | AuthController | POST /api/auth/register, POST /api/auth/login |
-| WorkoutLogController | GET /api/workoutlog, POST /api/workoutlog, GET /api/workoutlog/{id}, DELETE /api/workoutlog/{id}, GET /api/workoutlog/range?startDate=&endDate= |
+| WorkoutLogController | GET /api/workoutlog, POST /api/workoutlog, GET /api/workoutlog/{id}, PUT /api/workoutlog/{id}, DELETE /api/workoutlog/{id}, GET /api/workoutlog/range?startDate=&endDate= |
 | WorkoutPhotoController | GET /api/workoutphoto, POST /api/workoutphoto, GET /api/workoutphoto/{id}, DELETE /api/workoutphoto/{id} |
 | BodyWeightLogController | GET /api/bodyweightlog, POST /api/bodyweightlog, GET /api/bodyweightlog/{id}, DELETE /api/bodyweightlog/{id} |
-| RestDayController | GET /api/restday, POST /api/restday, GET /api/restday/{id}, DELETE /api/restday/{id} |
+| RestDayController | GET /api/restday, POST /api/restday, GET /api/restday/{id}, PUT /api/restday/{id}, DELETE /api/restday/{id} |
 
-**Note: No PUT/update endpoints exist on any controller.**
+**Note: WorkoutLog and RestDay have PUT endpoints; WorkoutPhoto and BodyWeightLog do not.** PUT accepts the same body as create and returns 404 for nonexistent or other users' ids. Per ADR-0002: POST and PUT on WorkoutLog return `WorkoutLogWriteResultDto` (wraps the workout DTO + `OverrodeRestDay` flag); POST and PUT on RestDay return 409 (displayable message) when the date holds one of the user's Workout Logs.
 
 ### Backend Key Patterns
-- Controllers inject `AppDbContext` directly — no repository or service layer
+- Controllers inject `AppDbContext` directly — no repository or service layer. (Exception: stateless invariant helpers in `Rules/`, e.g. `SameDayRules`, are allowed. They are **static** and take `AppDbContext` as a parameter — not DI-registered services or repositories. Per ADR-0002 they exist so the create and edit paths share one rule and can't drift. The caller still owns `SaveChangesAsync`.)
 - Raw EF models are never returned from controllers; always map to DTOs
 - `WorkoutLogController.GetById` uses `.Include(w => w.Photos)` and returns `WorkoutLogDetailDto`
 - List endpoints return the lightweight DTO (no photos included)
@@ -77,7 +79,15 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
 
 ### Known Backend Issues
-- No UPDATE (PUT) endpoints on any controller
+- No UPDATE (PUT) endpoint on WorkoutPhoto or BodyWeightLog
+
+### Testing
+Two complementary suites:
+
+- **`IronDiary.Api.Tests`** (xUnit + `WebApplicationFactory`) — the automated suite. Run with `dotnet test` from the repo root; no running API or database needed. The fixture (`IronDiaryApiFactory`) swaps the real Npgsql/PostgreSQL provider for **in-memory SQLite**, so these run fast and in CI with zero setup. They assert on HTTP status codes, response bodies, and follow-up GETs — never on internals.
+- **`postman-collection.json` + `postman-environment.json`** — a manual suite that runs against the **real running API wired to the actual PostgreSQL database** (`dotnet run`, then run the collection in Postman/Newman). **I run these manually.**
+
+**Why both:** SQLite and PostgreSQL don't translate LINQ identically, so a passing SQLite test does *not* prove the same query behaves the same on Postgres. The clearest example is the day-grained date comparison in `Rules/SameDayRules.cs` (`.Date.Date == day`) — Npgsql may translate it differently than SQLite. The **`Same-Day Rules (Postgres day-grained)` folder in the Postman collection** exists specifically to cover what SQLite can't prove: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control, all against real Postgres. **Re-run that folder after any change to `SameDayRules` or other day-grained `.Date` query logic.**
 
 ---
 
@@ -101,7 +111,7 @@ IronDiary-Frontend/src/
 │   │   │   └── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
 │   │   └── services/
 │   │       ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
-│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
+│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
 │   │       ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
 │   │       └── rest-day.service.ts
 │   ├── pages/
@@ -170,13 +180,21 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
+### In Progress — same-day rules + edit endpoints (backend, scoped 2026-06-11)
+PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-slice issues, all labeled `ready-for-agent`:
+- [x] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — done, uncommitted
+- [x] #4 — Rest Day creation on a workout date → 409; duplicates tolerated — done, uncommitted
+- [x] #5 — Workout creation overrides same-date Rest Day + override indicator in `WorkoutLogWriteResultDto`; frontend service updated — done 2026-06-11, uncommitted
+- [ ] **Commit #3/#4/#5/#6/#7** — all five slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, then one each for #5/#6/#7); optionally `/review` first.
+- [x] #6 — PUT workout log with same rules; CLAUDE.md "no PUT endpoints" notes updated — done 2026-06-11, uncommitted
+- [x] #7 — PUT rest day with same rules — done 2026-06-12, uncommitted
+- [x] **Day-grained `.Date` queries verified against real PostgreSQL** — done 2026-06-13. SQLite passing didn't prove Npgsql translates `.Date.Date == day` the same way, so this is now covered by the **`Same-Day Rules (Postgres day-grained)` folder in `postman-collection.json`**: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control. All green against Postgres. Re-run that folder after any change to `SameDayRules`.
+
 ### Pages to Build
-- [ ] `/log` — **next up; scope agreed 2026-06-11** (see CONTEXT.md + ADR-0002):
+- [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:
   - Combined newest-first timeline of Journal Entries (Workout Logs + Rest Days)
   - Routes: `/log` (list), `/log/new` (form with Workout/Rest toggle), `/log/workout/:id`, `/log/rest/:id` (detail + edit)
-  - Full CRUD: requires new `PUT /api/workoutlog/{id}` and `PUT /api/restday/{id}` endpoints + service methods
-  - Same-day rules (enforced in API, POST and PUT alike): workout on a rest date deletes the Rest Day; rest day on a workout date → 409; duplicate Rest Days tolerated
-  - New `IronDiary.Api.Tests` xUnit project (WebApplicationFactory) covering the same-day invariants
+  - Surfaces the override/409 messaging from issue #2's contracts (e.g. "this replaces your Rest Day")
   - Photos: detail view displays existing photos; upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
@@ -188,6 +206,7 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 ### Chores / Refactors
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
+- [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard

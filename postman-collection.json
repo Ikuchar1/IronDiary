@@ -9,296 +9,572 @@
   },
   "item": [
     {
-      "name": "Register",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Register succeeds or user already exists', function () {",
-        "  pm.expect([200, 400]).to.include(pm.response.code);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\"email\": \"{{test_email}}\", \"password\": \"{{test_password}}\"}" },
-        "url": { "raw": "{{base_url}}/api/Auth/register", "host": ["{{base_url}}"], "path": ["api", "Auth", "register"] }
-      }
+      "name": "Auth",
+      "description": "Register a test user (tolerates 'already exists') and log in to capture the JWT into {{token}}. Run this first — every other folder needs the token.",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Register succeeds or user already exists', function () {",
+            "  pm.expect([200, 400]).to.include(pm.response.code);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{test_email}}\", \"password\": \"{{test_password}}\"}" },
+            "url": { "raw": "{{base_url}}/api/Auth/register", "host": ["{{base_url}}"], "path": ["api", "Auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Login returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response contains token', function () {",
+            "  var json = pm.response.json();",
+            "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+            "  pm.environment.set('token', json.token);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{test_email}}\", \"password\": \"{{test_password}}\"}" },
+            "url": { "raw": "{{base_url}}/api/Auth/login", "host": ["{{base_url}}"], "path": ["api", "Auth", "login"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Login",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Login returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response contains token', function () {",
-        "  var json = pm.response.json();",
-        "  pm.expect(json.token).to.be.a('string').and.not.empty;",
-        "  pm.environment.set('token', json.token);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\"email\": \"{{test_email}}\", \"password\": \"{{test_password}}\"}" },
-        "url": { "raw": "{{base_url}}/api/Auth/login", "host": ["{{base_url}}"], "path": ["api", "Auth", "login"] }
-      }
+      "name": "Workout Logs",
+      "description": "CRUD smoke test for /api/WorkoutLog against the real stack. Note: POST/PUT return WorkoutLogWriteResultDto ({ workout, overrodeRestDay }), so the id lives at json.workout.id. Self-contained: creates a workout on 2026-03-25, reads it back, then deletes it.",
+      "item": [
+        {
+          "name": "Create Workout Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Create workout log returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response wraps workout + overrodeRestDay flag', function () {",
+            "  var json = pm.response.json();",
+            "  pm.expect(json.workout.id).to.be.a('number');",
+            "  pm.expect(json.workout.type).to.eql('Push');",
+            "  pm.expect(json.overrodeRestDay).to.be.a('boolean');",
+            "  pm.environment.set('workout_log_id', json.workout.id);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Push\", \"description\": \"Test push day\", \"date\": \"2026-03-25T10:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "Get All Workout Logs",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get workout logs returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response is an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "Get Workout Log By ID",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get workout log by ID returns 200', function () { pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{workout_log_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{workout_log_id}}"] }
+          }
+        },
+        {
+          "name": "Get Workout Logs By Date Range",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get workout logs by date range returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response is an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/range?startDate=2026-01-01T00:00:00Z&endDate=2026-12-31T23:59:59Z", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "range"], "query": [{ "key": "startDate", "value": "2026-01-01T00:00:00Z" }, { "key": "endDate", "value": "2026-12-31T23:59:59Z" }] }
+          }
+        },
+        {
+          "name": "Delete Workout Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Delete workout log returns 204', function () { pm.response.to.have.status(204); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{workout_log_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{workout_log_id}}"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Create Workout Log",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Create workout log returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response has id and type', function () {",
-        "  var json = pm.response.json();",
-        "  pm.expect(json.id).to.be.a('number');",
-        "  pm.expect(json.type).to.eql('Push');",
-        "  pm.environment.set('workout_log_id', json.id);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{token}}" }
-        ],
-        "body": { "mode": "raw", "raw": "{\"type\": \"Push\", \"description\": \"Test push day\", \"date\": \"2026-03-25T10:00:00Z\"}" },
-        "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
-      }
+      "name": "Workout Photos",
+      "description": "CRUD smoke test for /api/WorkoutPhoto. A photo needs a parent Workout Log, so this folder creates its own workout (Setup) and deletes it at the end (Cleanup) — fully self-contained.",
+      "item": [
+        {
+          "name": "Setup — Create parent Workout Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Parent workout created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('wp_workout_id', pm.response.json().workout.id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Pull\", \"description\": \"photo parent\", \"date\": \"2026-05-01T10:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "Create Workout Photo",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Create workout photo returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response has id and url', function () {",
+            "  var json = pm.response.json();",
+            "  pm.expect(json.id).to.be.a('number');",
+            "  pm.expect(json.url).to.be.a('string');",
+            "  pm.environment.set('workout_photo_id', json.id);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"url\": \"https://example.com/photo.jpg\", \"workoutLogId\": {{wp_workout_id}}}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutPhoto", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto"] }
+          }
+        },
+        {
+          "name": "Get All Workout Photos",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get workout photos returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response is an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutPhoto", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto"] }
+          }
+        },
+        {
+          "name": "Get Workout Photo By ID",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get workout photo by ID returns 200', function () { pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutPhoto/{{workout_photo_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto", "{{workout_photo_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Workout Photo",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Delete workout photo returns 204', function () { pm.response.to.have.status(204); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutPhoto/{{workout_photo_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto", "{{workout_photo_id}}"] }
+          }
+        },
+        {
+          "name": "Cleanup — delete parent Workout Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup parent workout deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{wp_workout_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{wp_workout_id}}"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Get All Workout Logs",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get workout logs returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response is an array', function () {",
-        "  pm.expect(pm.response.json()).to.be.an('array');",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
-      }
+      "name": "Body Weight Logs",
+      "description": "CRUD smoke test for /api/BodyWeightLog. Self-contained: creates, reads, deletes one entry.",
+      "item": [
+        {
+          "name": "Create Body Weight Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Create body weight log returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response has id and weight', function () {",
+            "  var json = pm.response.json();",
+            "  pm.expect(json.id).to.be.a('number');",
+            "  pm.expect(json.weight).to.eql(185.5);",
+            "  pm.environment.set('body_weight_log_id', json.id);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"weight\": 185.5, \"date\": \"2026-03-25T10:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/BodyWeightLog", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog"] }
+          }
+        },
+        {
+          "name": "Get All Body Weight Logs",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get body weight logs returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response is an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/BodyWeightLog", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog"] }
+          }
+        },
+        {
+          "name": "Get Body Weight Log By ID",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get body weight log by ID returns 200', function () { pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/BodyWeightLog/{{body_weight_log_id}}", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog", "{{body_weight_log_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Body Weight Log",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Delete body weight log returns 204', function () { pm.response.to.have.status(204); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/BodyWeightLog/{{body_weight_log_id}}", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog", "{{body_weight_log_id}}"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Get Workout Log By ID",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get workout log by ID returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/WorkoutLog/{{workout_log_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{workout_log_id}}"] }
-      }
+      "name": "Rest Days",
+      "description": "CRUD smoke test for /api/RestDay. Uses 2026-06-20 (a date with no workout) so creation returns 200 rather than the same-day 409. Self-contained: creates, reads, deletes one rest day.",
+      "item": [
+        {
+          "name": "Create Rest Day",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Create rest day returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response has id', function () {",
+            "  var json = pm.response.json();",
+            "  pm.expect(json.id).to.be.a('number');",
+            "  pm.environment.set('rest_day_id', json.id);",
+            "});"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2026-06-20T10:00:00Z\", \"note\": \"Test rest day\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "Get All Rest Days",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get rest days returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response is an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "Get Rest Day By ID",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get rest day by ID returns 200', function () { pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/RestDay/{{rest_day_id}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{rest_day_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Rest Day",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Delete rest day returns 204', function () { pm.response.to.have.status(204); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/RestDay/{{rest_day_id}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{rest_day_id}}"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Get Workout Logs By Date Range",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get workout logs by date range returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response is an array', function () {",
-        "  pm.expect(pm.response.json()).to.be.an('array');",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/WorkoutLog/range?startDate=2026-01-01T00:00:00Z&endDate=2026-12-31T23:59:59Z", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "range"], "query": [{ "key": "startDate", "value": "2026-01-01T00:00:00Z" }, { "key": "endDate", "value": "2026-12-31T23:59:59Z" }] }
-      }
-    },
-    {
-      "name": "Create Workout Photo",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Create workout photo returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response has id and url', function () {",
-        "  var json = pm.response.json();",
-        "  pm.expect(json.id).to.be.a('number');",
-        "  pm.expect(json.url).to.be.a('string');",
-        "  pm.environment.set('workout_photo_id', json.id);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{token}}" }
-        ],
-        "body": { "mode": "raw", "raw": "{\"url\": \"https://example.com/photo.jpg\", \"workoutLogId\": {{workout_log_id}}}" },
-        "url": { "raw": "{{base_url}}/api/WorkoutPhoto", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto"] }
-      }
-    },
-    {
-      "name": "Get All Workout Photos",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get workout photos returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response is an array', function () {",
-        "  pm.expect(pm.response.json()).to.be.an('array');",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/WorkoutPhoto", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto"] }
-      }
-    },
-    {
-      "name": "Get Workout Photo By ID",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get workout photo by ID returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/WorkoutPhoto/{{workout_photo_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto", "{{workout_photo_id}}"] }
-      }
-    },
-    {
-      "name": "Delete Workout Photo",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Delete workout photo returns 204', function () {",
-        "  pm.response.to.have.status(204);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "DELETE",
-        "url": { "raw": "{{base_url}}/api/WorkoutPhoto/{{workout_photo_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutPhoto", "{{workout_photo_id}}"] }
-      }
-    },
-    {
-      "name": "Delete Workout Log",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Delete workout log returns 204', function () {",
-        "  pm.response.to.have.status(204);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "DELETE",
-        "url": { "raw": "{{base_url}}/api/WorkoutLog/{{workout_log_id}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{workout_log_id}}"] }
-      }
-    },
-    {
-      "name": "Create Body Weight Log",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Create body weight log returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response has id and weight', function () {",
-        "  var json = pm.response.json();",
-        "  pm.expect(json.id).to.be.a('number');",
-        "  pm.expect(json.weight).to.eql(185.5);",
-        "  pm.environment.set('body_weight_log_id', json.id);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{token}}" }
-        ],
-        "body": { "mode": "raw", "raw": "{\"weight\": 185.5, \"date\": \"2026-03-25T10:00:00Z\"}" },
-        "url": { "raw": "{{base_url}}/api/BodyWeightLog", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog"] }
-      }
-    },
-    {
-      "name": "Get All Body Weight Logs",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get body weight logs returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response is an array', function () {",
-        "  pm.expect(pm.response.json()).to.be.an('array');",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/BodyWeightLog", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog"] }
-      }
-    },
-    {
-      "name": "Get Body Weight Log By ID",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get body weight log by ID returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/BodyWeightLog/{{body_weight_log_id}}", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog", "{{body_weight_log_id}}"] }
-      }
-    },
-    {
-      "name": "Delete Body Weight Log",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Delete body weight log returns 204', function () {",
-        "  pm.response.to.have.status(204);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "DELETE",
-        "url": { "raw": "{{base_url}}/api/BodyWeightLog/{{body_weight_log_id}}", "host": ["{{base_url}}"], "path": ["api", "BodyWeightLog", "{{body_weight_log_id}}"] }
-      }
-    },
-    {
-      "name": "Create Rest Day",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Create rest day returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response has id', function () {",
-        "  var json = pm.response.json();",
-        "  pm.expect(json.id).to.be.a('number');",
-        "  pm.environment.set('rest_day_id', json.id);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\"date\": \"2026-03-25T10:00:00Z\", \"note\": \"Test rest day\"}" },
-        "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
-      }
-    },
-    {
-      "name": "Get All Rest Days",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get rest days returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});",
-        "pm.test('Response is an array', function () {",
-        "  pm.expect(pm.response.json()).to.be.an('array');",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
-      }
-    },
-    {
-      "name": "Get Rest Day By ID",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Get rest day by ID returns 200', function () {",
-        "  pm.response.to.have.status(200);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "GET",
-        "url": { "raw": "{{base_url}}/api/RestDay/{{rest_day_id}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{rest_day_id}}"] }
-      }
-    },
-    {
-      "name": "Delete Rest Day",
-      "event": [{ "listen": "test", "script": { "exec": [
-        "pm.test('Delete rest day returns 204', function () {",
-        "  pm.response.to.have.status(204);",
-        "});"
-      ]}}],
-      "request": {
-        "method": "DELETE",
-        "url": { "raw": "{{base_url}}/api/RestDay/{{rest_day_id}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{rest_day_id}}"] }
-      }
+      "name": "Same-Day Rules (Postgres day-grained)",
+      "description": "ADR-0002 same-day invariants, exercised with DIFFERENT times on the SAME calendar day so they actually prove the `.Date` day-grained comparison works on real PostgreSQL (Npgsql) — something the SQLite integration tests cannot confirm. Run against a live API pointed at Postgres. Self-contained: logs in, creates its own data on far-future (2099) dates, asserts, and cleans up after itself.",
+      "item": [
+        {
+          "name": "SDR Setup — Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Login returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('token', pm.response.json().token);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{test_email}}\", \"password\": \"{{test_password}}\"}" },
+            "url": { "raw": "{{base_url}}/api/Auth/login", "host": ["{{base_url}}"], "path": ["api", "Auth", "login"] }
+          }
+        },
+        {
+          "name": "SDR A1 — Create Workout 08:00 (2099-01-10)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Workout created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_w1', pm.response.json().workout.id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Push\", \"description\": \"SDR A\", \"date\": \"2099-01-10T08:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "SDR A2 — Rest Day same day 20:00 → 409 (day-grained collide)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Rest Day on a workout day is rejected (409)', function () { pm.response.to.have.status(409); });",
+            "pm.test('409 carries a displayable message', function () { pm.expect(pm.response.text()).to.include('Rest Day'); });"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2099-01-10T20:00:00Z\", \"note\": \"different time, same day\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "SDR A3 — Cleanup: delete workout",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup workout deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{sdr_w1}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{sdr_w1}}"] }
+          }
+        },
+        {
+          "name": "SDR B1 — Create Rest Day 22:00 (2099-02-10)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Rest Day created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_r1', pm.response.json().id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2099-02-10T22:00:00Z\", \"note\": \"SDR B\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "SDR B2 — Workout same day 06:00 overrides Rest Day (overrodeRestDay true)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Workout created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.test('overrodeRestDay is true (same day, different time)', function () { pm.expect(pm.response.json().overrodeRestDay).to.be.true; });",
+            "pm.environment.set('sdr_w2', pm.response.json().workout.id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Legs\", \"description\": \"SDR B\", \"date\": \"2099-02-10T06:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "SDR B3 — Rest Day gone after override",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Get rest days returns 200', function () { pm.response.to.have.status(200); });",
+            "var dates = pm.response.json().map(function (r) { return r.date; }).join(',');",
+            "pm.test('No Rest Day remains on 2099-02-10', function () { pm.expect(dates).to.not.include('2099-02-10'); });"
+          ]}}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "SDR B4 — Cleanup: delete workout",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup workout deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{sdr_w2}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{sdr_w2}}"] }
+          }
+        },
+        {
+          "name": "SDR C1 — Create Workout 09:00 (2099-03-10)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Workout created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_w3', pm.response.json().workout.id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Push\", \"description\": \"SDR C\", \"date\": \"2099-03-10T09:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "SDR C2 — Rest Day on the NEXT day is allowed (200, negative control)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Different calendar day does not collide (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_r3', pm.response.json().id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2099-03-11T09:00:00Z\", \"note\": \"next day, must be allowed\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "SDR D1 — PUT Rest Day onto workout day 23:00 → 409 (#7)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Moving a Rest Day onto a workout day is rejected (409)', function () { pm.response.to.have.status(409); });",
+            "pm.test('409 carries a displayable message', function () { pm.expect(pm.response.text()).to.include('Rest Day'); });"
+          ]}}],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2099-03-10T23:00:00Z\", \"note\": \"moved onto workout day\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay/{{sdr_r3}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{sdr_r3}}"] }
+          }
+        },
+        {
+          "name": "SDR D2 — Cleanup: delete rest day",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup rest day deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/RestDay/{{sdr_r3}}", "host": ["{{base_url}}"], "path": ["api", "RestDay", "{{sdr_r3}}"] }
+          }
+        },
+        {
+          "name": "SDR D3 — Cleanup: delete workout",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup workout deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{sdr_w3}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{sdr_w3}}"] }
+          }
+        },
+        {
+          "name": "SDR E1 — Create Rest Day 12:00 (2099-04-10)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Rest Day created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_r4', pm.response.json().id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"date\": \"2099-04-10T12:00:00Z\", \"note\": \"SDR E\"}" },
+            "url": { "raw": "{{base_url}}/api/RestDay", "host": ["{{base_url}}"], "path": ["api", "RestDay"] }
+          }
+        },
+        {
+          "name": "SDR E2 — Create Workout 09:00 (2099-04-11)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Workout created (200)', function () { pm.response.to.have.status(200); });",
+            "pm.environment.set('sdr_w4', pm.response.json().workout.id);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Pull\", \"description\": \"SDR E\", \"date\": \"2099-04-11T09:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog"] }
+          }
+        },
+        {
+          "name": "SDR E3 — PUT Workout onto Rest Day's day 23:00 → overrides it (200, #6)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Edit succeeds (200)', function () { pm.response.to.have.status(200); });",
+            "pm.test('overrodeRestDay is true (moved onto a rest day, different time)', function () { pm.expect(pm.response.json().overrodeRestDay).to.be.true; });"
+          ]}}],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"type\": \"Pull\", \"description\": \"SDR E moved\", \"date\": \"2099-04-10T23:00:00Z\"}" },
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{sdr_w4}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{sdr_w4}}"] }
+          }
+        },
+        {
+          "name": "SDR E4 — Cleanup: delete workout",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Cleanup workout deleted', function () { pm.expect([204, 404]).to.include(pm.response.code); });"
+          ]}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/WorkoutLog/{{sdr_w4}}", "host": ["{{base_url}}"], "path": ["api", "WorkoutLog", "{{sdr_w4}}"] }
+          }
+        }
+      ]
     }
   ]
 }

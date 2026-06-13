@@ -69,7 +69,7 @@ public class BodyWeightLogController : ControllerBase
         //make sure the it belongs to current user
         if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         return Ok(new BodyWeightLogDto
@@ -94,7 +94,7 @@ public class BodyWeightLogController : ControllerBase
         //make sure the it belongs to current user
         if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         try

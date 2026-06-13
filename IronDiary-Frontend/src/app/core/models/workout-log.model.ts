@@ -19,6 +19,11 @@ export interface WorkoutLogDetailDto {
   photos: WorkoutPhotoDto[];
 }
 
+export interface WorkoutLogWriteResultDto {
+  workout: WorkoutLogDto;
+  overrodeRestDay: boolean;
+}
+
 export interface CreateWorkoutLogDto {
   type: string;
   description?: string;

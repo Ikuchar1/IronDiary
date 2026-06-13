@@ -21,3 +21,8 @@ public class WorkoutLogDetailDto
     public DateTime Date { get; set; }
     public List<WorkoutPhotoDto> Photos { get; set; } = new();
 }
+public class WorkoutLogWriteResultDto
+{
+    public WorkoutLogDto Workout { get; set; } = null!;
+    public bool OverrodeRestDay { get; set; }
+}

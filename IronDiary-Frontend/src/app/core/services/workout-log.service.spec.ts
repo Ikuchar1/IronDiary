@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient } from '@angular/common/http';
 
 import { WorkoutLogService } from './workout-log.service';
-import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto } from '../models/workout-log.model';
+import { CreateWorkoutLogDto, WorkoutLogDetailDto, WorkoutLogDto, WorkoutLogWriteResultDto } from '../models/workout-log.model';
 import { environment } from '../../../environments/environment';
 
 describe('WorkoutLogService', () => {
@@ -42,16 +42,40 @@ describe('WorkoutLogService', () => {
     req.flush(mockLogs);
   });
 
-  it('should POST a new workout log', () => {
+  it('should POST a new workout log and surface the override indicator', () => {
     const dto: CreateWorkoutLogDto = { type: 'Pull', description: 'Back day', date: '2026-03-02T00:00:00Z' };
-    const mockResponse: WorkoutLogDto = { id: 2, type: 'Pull', description: 'Back day', date: '2026-03-02T00:00:00Z' };
+    const mockResponse: WorkoutLogWriteResultDto = {
+      workout: { id: 2, type: 'Pull', description: 'Back day', date: '2026-03-02T00:00:00Z' },
+      overrodeRestDay: true
+    };
 
-    service.createWorkoutLog(dto).subscribe(log => {
-      expect(log).toEqual(mockResponse);
+    service.createWorkoutLog(dto).subscribe(result => {
+      expect(result).toEqual(mockResponse);
+      expect(result.overrodeRestDay).toBeTrue();
+      expect(result.workout.id).toBe(2);
     });
 
     const req = httpMock.expectOne(apiUrl);
     expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(dto);
+    req.flush(mockResponse);
+  });
+
+  it('should PUT an updated workout log and surface the override indicator', () => {
+    const dto: CreateWorkoutLogDto = { type: 'Pull', description: 'Rows', date: '2026-03-05T00:00:00Z' };
+    const mockResponse: WorkoutLogWriteResultDto = {
+      workout: { id: 7, type: 'Pull', description: 'Rows', date: '2026-03-05T00:00:00Z' },
+      overrodeRestDay: true
+    };
+
+    service.updateWorkoutLog(7, dto).subscribe(result => {
+      expect(result).toEqual(mockResponse);
+      expect(result.overrodeRestDay).toBeTrue();
+      expect(result.workout.type).toBe('Pull');
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/7`);
+    expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(dto);
     req.flush(mockResponse);
   });
