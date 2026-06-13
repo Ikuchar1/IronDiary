@@ -91,7 +91,7 @@ public class RestDayController : ControllerBase
         //make sure the it belongs to current user
         if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         return Ok(ToDto(restDay));
@@ -112,7 +112,7 @@ public class RestDayController : ControllerBase
         //make sure the it belongs to current user
         if(restDay.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         try

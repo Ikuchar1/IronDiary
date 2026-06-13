@@ -81,6 +81,14 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 ### Known Backend Issues
 - No UPDATE (PUT) endpoint on WorkoutPhoto or BodyWeightLog
 
+### Testing
+Two complementary suites:
+
+- **`IronDiary.Api.Tests`** (xUnit + `WebApplicationFactory`) — the automated suite. Run with `dotnet test` from the repo root; no running API or database needed. The fixture (`IronDiaryApiFactory`) swaps the real Npgsql/PostgreSQL provider for **in-memory SQLite**, so these run fast and in CI with zero setup. They assert on HTTP status codes, response bodies, and follow-up GETs — never on internals.
+- **`postman-collection.json` + `postman-environment.json`** — a manual suite that runs against the **real running API wired to the actual PostgreSQL database** (`dotnet run`, then run the collection in Postman/Newman). **I run these manually.**
+
+**Why both:** SQLite and PostgreSQL don't translate LINQ identically, so a passing SQLite test does *not* prove the same query behaves the same on Postgres. The clearest example is the day-grained date comparison in `Rules/SameDayRules.cs` (`.Date.Date == day`) — Npgsql may translate it differently than SQLite. The **`Same-Day Rules (Postgres day-grained)` folder in the Postman collection** exists specifically to cover what SQLite can't prove: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control, all against real Postgres. **Re-run that folder after any change to `SameDayRules` or other day-grained `.Date` query logic.**
+
 ---
 
 ## Frontend — IronDiary-Frontend
@@ -198,6 +206,7 @@ PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-
 ### Chores / Refactors
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
+- [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard

@@ -92,7 +92,7 @@ public class WorkoutLogController : ControllerBase
 
         if (log == null) return NotFound();
         if (log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-            return Forbid();
+            return NotFound();
 
         return Ok(new WorkoutLogDetailDto
         {
@@ -123,7 +123,7 @@ public class WorkoutLogController : ControllerBase
         //make sure the it belongs to current user
         if(log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            return Forbid();
+            return NotFound();
         }
 
         try
