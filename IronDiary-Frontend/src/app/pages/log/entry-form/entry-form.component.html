@@ -1,5 +1,5 @@
 <div class="entry-form">
-  <div class="kind-toggle">
+  <div class="kind-toggle" *ngIf="mode === 'create'">
     <button
       mat-stroked-button
       type="button"
@@ -67,6 +67,8 @@
 
   <div class="form-actions">
     <button mat-stroked-button class="cancel-btn" (click)="cancel()">Cancel</button>
-    <button mat-flat-button class="save-btn" [disabled]="!canSave" (click)="save()">Save</button>
+    <button mat-flat-button class="save-btn" [disabled]="!canSave" (click)="save()">
+      {{ mode === 'edit' ? 'Save Changes' : 'Save' }}
+    </button>
   </div>
 </div>

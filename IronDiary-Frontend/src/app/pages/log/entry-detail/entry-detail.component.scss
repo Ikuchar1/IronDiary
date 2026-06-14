@@ -9,6 +9,24 @@
   gap: 0.75rem;
 }
 
+.back-btn {
+  align-self: flex-start;
+  // Pull tight to the top-left so it reads as a page-level "back", not an action.
+  margin: -0.25rem 0 0.25rem -0.5rem;
+  min-width: 0;
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.8;
+  color: $text-muted !important;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $cyan !important;
+    background: rgba($cyan, 0.08);
+  }
+}
+
 .entry-badge {
   align-self: flex-start;
   font-size: 0.8rem;
@@ -34,6 +52,10 @@
 
 .detail-actions {
   margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem; // matches the Save/Cancel spacing on the edit form
+  align-items: center;
+  justify-content: flex-end;
 }
 
 // Secondary/destructive action: orange "caution" rather than primary cyan.

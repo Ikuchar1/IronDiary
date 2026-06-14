@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -28,13 +28,20 @@ import { toLocalDateString } from '../../../core/utils/local-date.util';
   styleUrl: './entry-form.component.scss',
 })
 export class EntryFormComponent {
-  kind: 'workout' | 'rest' = 'workout';
-  type = '';
-  description = '';
-  note = '';
-  date = new Date();
+  /** 'create' POSTs and navigates; 'edit' PUTs the existing entry and emits. */
+  @Input() mode: 'create' | 'edit' = 'create';
+  @Input() entryId?: number;
+  @Input() kind: 'workout' | 'rest' = 'workout';
+  @Input() type = '';
+  @Input() description = '';
+  @Input() note = '';
+  @Input() date = new Date();
   errorMessage = '';
   maxWorkoutDate = new Date();
+
+  /** Edit mode reports success/cancel to the host instead of navigating. */
+  @Output() saved = new EventEmitter<void>();
+  @Output() cancelled = new EventEmitter<void>();
 
   constructor(
     private router: Router,
@@ -57,9 +64,23 @@ export class EntryFormComponent {
   }
 
   cancel() {
-    // Discard whatever was typed and return to the Timeline. Leaving the route
-    // destroys the component, so there's no in-progress state to clear.
+    // In edit mode the host owns the view; just report the cancel. Otherwise
+    // discard whatever was typed and return to the Timeline (leaving the route
+    // destroys the component, so there's no in-progress state to clear).
+    if (this.mode === 'edit') {
+      this.cancelled.emit();
+      return;
+    }
     this.router.navigate(['/log']);
+  }
+
+  /** Success leaves the form: create navigates to /log; edit emits `saved`. */
+  private onSaved() {
+    if (this.mode === 'edit') {
+      this.saved.emit();
+    } else {
+      this.router.navigate(['/log']);
+    }
   }
 
   save() {
@@ -67,22 +88,32 @@ export class EntryFormComponent {
     const date = toLocalDateString(this.date);
 
     if (this.kind === 'workout') {
-      this.workoutLogService
-        .createWorkoutLog({ type: this.type, description: this.description || undefined, date })
-        .subscribe({
-          next: result => {
-            if (result.overrodeRestDay) {
-              this.snackBar.open(`Replaced your rest day on ${date}.`, 'Dismiss', { duration: 4000 });
-            }
-            this.router.navigate(['/log']);
-          },
-          error: () => {
-            this.errorMessage = 'Could not save your workout.';
-          },
-        });
+      const dto = { type: this.type, description: this.description || undefined, date };
+      const request$ =
+        this.mode === 'edit'
+          ? this.workoutLogService.updateWorkoutLog(this.entryId!, dto)
+          : this.workoutLogService.createWorkoutLog(dto);
+
+      request$.subscribe({
+        next: result => {
+          if (result.overrodeRestDay) {
+            this.snackBar.open(`Replaced your rest day on ${date}.`, 'Dismiss', { duration: 4000 });
+          }
+          this.onSaved();
+        },
+        error: () => {
+          this.errorMessage = 'Could not save your workout.';
+        },
+      });
     } else {
-      this.restDayService.create({ note: this.note || undefined, date }).subscribe({
-        next: () => this.router.navigate(['/log']),
+      const dto = { note: this.note || undefined, date };
+      const request$ =
+        this.mode === 'edit'
+          ? this.restDayService.update(this.entryId!, dto)
+          : this.restDayService.create(dto);
+
+      request$.subscribe({
+        next: () => this.onSaved(),
         error: err => {
           this.errorMessage =
             typeof err.error === 'string' ? err.error : 'Could not save your rest day.';
