@@ -1,0 +1,48 @@
+<div class="timeline">
+  <ng-container *ngIf="!isLoading; else loading">
+
+    <div class="error-state" *ngIf="hasError">
+      <p>Unable to load logs.</p>
+      <button mat-stroked-button color="primary" (click)="loadEntries()">Retry</button>
+    </div>
+
+    <div class="entry-list" *ngIf="!hasError && entries.length > 0">
+      <button
+        type="button"
+        class="entry-row"
+        *ngFor="let entry of entries"
+        (click)="openEntry(entry)"
+      >
+        <div class="entry-main">
+          <span
+            class="entry-badge"
+            [class.badge-workout]="entry.kind === 'workout'"
+            [class.badge-rest]="entry.kind === 'rest'"
+          >
+            {{ entry.kind === 'workout' ? entry.data.type : 'Rest' }}
+          </span>
+          <span class="entry-date">{{ entry.date | date: 'EEEE, MMM d' }}</span>
+        </div>
+
+        <p
+          class="entry-secondary"
+          *ngIf="(entry.kind === 'workout' ? entry.data.description : entry.data.note) as secondary"
+        >
+          {{ secondary }}
+        </p>
+      </button>
+    </div>
+
+    <div class="empty-state" *ngIf="!hasError && entries.length === 0">
+      <p>No entries yet. Log your first workout or rest day.</p>
+      <button mat-flat-button color="primary" (click)="goToNew()">Log your first entry</button>
+    </div>
+
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="loading">
+      <mat-progress-spinner mode="indeterminate" color="primary" diameter="48" />
+    </div>
+  </ng-template>
+</div>
