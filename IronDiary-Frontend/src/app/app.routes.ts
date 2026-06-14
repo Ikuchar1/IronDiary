@@ -5,6 +5,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LogComponent } from './pages/log/log.component';
 import { EntryDetailComponent } from './pages/log/entry-detail/entry-detail.component';
+import { EntryFormComponent } from './pages/log/entry-form/entry-form.component';
 import { authGuard } from './core/guards/auth.guard';
 
 
@@ -21,6 +22,11 @@ export const routes: Routes = [
   {
     path: 'log',
     component: LogComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'log/new',
+    component: EntryFormComponent,
     canActivate: [authGuard]
   },
   {

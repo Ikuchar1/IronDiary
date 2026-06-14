@@ -1,4 +1,10 @@
 <div class="timeline">
+  <div class="timeline-header" *ngIf="!isLoading && !hasError && entries.length > 0">
+    <button mat-flat-button color="primary" class="new-entry-btn" (click)="goToNew()">
+      + New entry
+    </button>
+  </div>
+
   <ng-container *ngIf="!isLoading; else loading">
 
     <div class="error-state" *ngIf="hasError">

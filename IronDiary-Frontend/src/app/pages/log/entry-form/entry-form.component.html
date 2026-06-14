@@ -1,0 +1,72 @@
+<div class="entry-form">
+  <div class="kind-toggle">
+    <button
+      mat-stroked-button
+      type="button"
+      class="toggle-workout"
+      [class.active]="kind === 'workout'"
+      (click)="setKind('workout')"
+    >
+      Workout
+    </button>
+    <button
+      mat-stroked-button
+      type="button"
+      class="toggle-rest"
+      [class.active]="kind === 'rest'"
+      (click)="setKind('rest')"
+    >
+      Rest Day
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Date</mat-label>
+    <input
+      matInput
+      name="date"
+      autocomplete="off"
+      [matDatepicker]="picker"
+      [max]="maxDate"
+      [(ngModel)]="date"
+    />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  @if (kind === 'workout') {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Type</mat-label>
+      <input
+        matInput
+        name="type"
+        autocomplete="off"
+        required
+        #typeModel="ngModel"
+        [(ngModel)]="type"
+      />
+      @if (typeModel.invalid && typeModel.touched) {
+        <mat-error>Type is required (e.g. Push, Pull, Legs)</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput name="description" autocomplete="off" [(ngModel)]="description"></textarea>
+    </mat-form-field>
+  } @else {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Note</mat-label>
+      <input matInput name="note" autocomplete="off" [(ngModel)]="note" />
+    </mat-form-field>
+  }
+
+  @if (errorMessage) {
+    <p class="form-error">{{ errorMessage }}</p>
+  }
+
+  <div class="form-actions">
+    <button mat-stroked-button class="cancel-btn" (click)="cancel()">Cancel</button>
+    <button mat-flat-button class="save-btn" [disabled]="!canSave" (click)="save()">Save</button>
+  </div>
+</div>
