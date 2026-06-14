@@ -263,6 +263,7 @@ ng generate component pages/<name>     # generate new page component
 3. `git switch -c <branch>` carries uncommitted changes onto the new branch, so it's fine to branch even after editing — just always branch before the first commit.
 4. Commit on the branch, push with `git push -u origin <branch>`, then open a PR for review (use `gh pr create`). Do not merge to `main` without the user's go-ahead.
 5. Only commit/push when the user asks.
+6. **Do not add a `Co-Authored-By: Claude` line (or any AI attribution trailer) to commit messages.** Keep commit messages clean — no co-author/attribution footer.
 
 ---
 
