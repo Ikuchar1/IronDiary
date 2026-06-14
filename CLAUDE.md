@@ -186,7 +186,7 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 ---
 
 ## Pages Status
-**Built:** home, login, register, dashboard, log — all slices done (#10 Timeline list, #11 entry detail/delete, #12 new-entry form `/log/new`, #13 inline edit, #14 datepicker theming selected=cyan / today=orange); awaiting PR #15 merge
+**Built:** home, login, register, dashboard, log
 **To build:** bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
@@ -197,8 +197,6 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices done on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; body has `Closes #10`/`#11`/`#12`/`#13`/`#14`). **Done:** #10 Timeline list, #11 entry detail + delete, #12 new-entry form (`/log/new`, create + override/409 rules), #13 inline edit on the detail page, #14 datepicker theming (global, selected=cyan / today=orange per spec, in `styles.scss`). **Remaining:** merge PR #15. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
-  - Photos: detail view renders a dashed placeholder and ignores the `photos` array (#11); real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
