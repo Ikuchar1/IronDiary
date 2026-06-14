@@ -166,7 +166,7 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
 | /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
 
-Routes still to build: `/bodyweight`, `/photos`, `/profile`. Inline edit on the detail routes is #13.
+Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 
 ### Frontend Key Patterns
 - All components are standalone (no NgModules)
@@ -186,8 +186,7 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`. Inline edit on the 
 ---
 
 ## Pages Status
-**Built:** home, login, register, dashboard
-**In progress:** log — Timeline list (#10), entry detail/delete (#11), new-entry form `/log/new` (#12), datepicker theming (#14 — selected=cyan / today=orange per spec) done; remaining: inline edit (#13)
+**Built:** home, login, register, dashboard, log — all slices done (#10 Timeline list, #11 entry detail/delete, #12 new-entry form `/log/new`, #13 inline edit, #14 datepicker theming selected=cyan / today=orange); awaiting PR #15 merge
 **To build:** bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
@@ -198,7 +197,7 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`. Inline edit on the 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices land on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; `Closes #10`/`#11`/`#12`/`#14` accumulating as slices land). **Done:** #10 Timeline list, #11 entry detail + delete, #12 new-entry form (`/log/new`, create + override/409 rules), #14 datepicker theming (global, selected=cyan / today=orange per spec, in `styles.scss`). **Remaining:** #13 inline edit on the detail page. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices done on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; body has `Closes #10`/`#11`/`#12`/`#13`/`#14`). **Done:** #10 Timeline list, #11 entry detail + delete, #12 new-entry form (`/log/new`, create + override/409 rules), #13 inline edit on the detail page, #14 datepicker theming (global, selected=cyan / today=orange per spec, in `styles.scss`). **Remaining:** merge PR #15. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
   - Photos: detail view renders a dashed placeholder and ignores the `photos` array (#11); real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
