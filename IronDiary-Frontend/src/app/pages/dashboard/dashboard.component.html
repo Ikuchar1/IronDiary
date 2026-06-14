@@ -10,7 +10,7 @@
   </mat-card>
 
   <!-- QUICK LOG -->
-  <button mat-flat-button class="log-btn" (click)="goToLog()">
+  <button mat-flat-button class="log-btn" (click)="goToNewEntry()">
     + Log a Session
   </button>
 
@@ -21,7 +21,7 @@
       <ng-container *ngIf="mostRecentLog; else noLog">
         <p class="stat-value">
           {{ mostRecentLog.type }}
-          <span class="stat-unit">{{ mostRecentLog.date | date: 'MMM d' }}</span>
+          <span class="stat-unit">{{ mostRecentLog.date | date: 'MMM d' : 'UTC' }}</span>
         </p>
         <p class="stat-description" *ngIf="mostRecentLog.description">
           {{ mostRecentLog.description }}
@@ -41,7 +41,7 @@
         <p class="stat-value">
           {{ latestWeight.weight }}<span class="stat-unit"> lbs</span>
         </p>
-        <p class="stat-description">{{ latestWeight.date | date: 'MMM d' }}</p>
+        <p class="stat-description">{{ latestWeight.date | date: 'MMM d' : 'UTC' }}</p>
       </ng-container>
       <ng-template #noWeight>
         <p class="stat-empty">No weight logged yet</p>
@@ -60,7 +60,7 @@
           <div class="activity-row">
             <div class="activity-main">
               <span class="log-type-badge">{{ log.type }}</span>
-              <span class="activity-date">{{ log.date | date: 'EEEE, MMM d' }}</span>
+              <span class="activity-date">{{ log.date | date: 'EEEE, MMM d' : 'UTC' }}</span>
             </div>
             <p class="activity-description" *ngIf="log.description">{{ log.description }}</p>
           </div>

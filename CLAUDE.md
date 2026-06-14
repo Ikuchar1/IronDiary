@@ -1,5 +1,8 @@
 # IronDiary — Project Context - Last Updated June 12th 2026
 
+## Interaction
+- Start every single reply to the user with their name, "Ian".
+
 ## Overview
 Personal fitness journal web app. Users log workouts (freeform type — Push/Pull/Legs or anything else), rest days, bodyweight entries, and progress photos. Features: streak tracking, bodyweight chart, progress photo grid. Deployed as a mobile-friendly web app for gym use.
 
@@ -77,6 +80,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - Swagger configured with Bearer auth for testing protected endpoints
 - CORS currently only allows `http://localhost:4200`
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
+- **Entry `Date` columns are Postgres `timestamptz`, which Npgsql only writes when `DateTime.Kind == Utc`.** Every write path (WorkoutLog/RestDay POST + PUT) stamps the incoming `dto.Date` with `DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc)` **before** any DB use (the same-day query fails on `Unspecified` too). Use `SpecifyKind`, **not** `ToUniversalTime()` — converting would shift the calendar day and reintroduce the off-by-one ADR-0003 guards against. The frontend sends a bare `YYYY-MM-DD` (ADR-0003), which binds to midnight-`Unspecified`; the range query already did this at `WorkoutLogController` GET `/range`.
 
 ### Known Backend Issues
 - No UPDATE (PUT) endpoint on WorkoutPhoto or BodyWeightLog
@@ -106,23 +110,30 @@ IronDiary-Frontend/src/
 │   │   ├── interceptors/
 │   │   │   └── auth.interceptor.ts    ← functional HttpInterceptorFn; attaches Bearer token
 │   │   ├── models/
-│   │   │   ├── workout-log.model.ts   ← WorkoutPhotoDto, WorkoutLogDto, WorkoutLogDetailDto, CreateWorkoutLogDto
+│   │   │   ├── workout-log.model.ts   ← WorkoutPhotoDto, WorkoutLogDto, WorkoutLogDetailDto, WorkoutLogWriteResultDto, CreateWorkoutLogDto
 │   │   │   ├── body-weight.model.ts   ← BodyWeightLogDto, CreateBodyWeightLogDto
-│   │   │   └── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
-│   │   └── services/
-│   │       ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
-│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
-│   │       ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
-│   │       └── rest-day.service.ts
+│   │   │   ├── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
+│   │   │   └── journal-entry.model.ts ← JournalEntry discriminated union (frontend-only view model: { kind, id, date, data })
+│   │   ├── services/
+│   │   │   ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
+│   │   │   ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
+│   │   │   ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
+│   │   │   └── rest-day.service.ts
+│   │   └── utils/
+│   │       ├── streak.util.ts          ← calculateStreak (+ spec)
+│   │       ├── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
+│   │       └── local-date.util.ts      ← toLocalDateString: YYYY-MM-DD from LOCAL calendar parts, never toISOString (ADR-0003) (+ spec)
 │   ├── pages/
 │   │   ├── home/           ← public landing page (hero, features, how-it-works)
 │   │   ├── login/          ← login form
 │   │   ├── register/       ← register form
-│   │   └── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
+│   │   ├── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
+│   │   └── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete); entry-form/ (EntryFormComponent — /log/new create form, Workout/Rest toggle)
 │   └── shared/
 │       └── components/
 │           ├── navbar/
-│           └── footer/
+│           ├── footer/
+│           └── confirm-dialog/   ← reusable MatDialog confirm body (ConfirmDialogComponent; closes true/false)
 ├── environments/
 │   ├── environment.ts             ← production placeholder (not yet configured — app is local only)
 │   └── environment.development.ts ← local dev (apiUrl: 'http://localhost:5092/api')
@@ -150,8 +161,12 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /login | LoginComponent | none |
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
+| /log | LogComponent (Timeline list) | authGuard |
+| /log/new | EntryFormComponent (create: Workout/Rest toggle) | authGuard |
+| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
+| /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
 
-Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
+Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 
 ### Frontend Key Patterns
 - All components are standalone (no NgModules)
@@ -160,7 +175,8 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 - JWT stored in `localStorage` under key `'token'`, attached via functional interceptor
 - `authGuard` is a functional guard (not class-based `CanActivate`)
 - `authInterceptor` is a functional `HttpInterceptorFn`
-- Angular Material used for UI components (MatCard, MatButton, MatList, MatChips, MatProgressSpinner confirmed in use)
+- Angular Material used for UI components (MatCard, MatButton, MatList, MatChips, MatProgressSpinner, MatDialog confirmed in use)
+- Delete confirmation uses the shared `ConfirmDialogComponent` via `MatDialog`; the dialog returns `true`/`false` through `afterClosed()`
 - Pages use `.scss`; some older shared components still have `.css` files alongside (do not rename)
 
 ### Known Frontend Issues / Gotchas
@@ -170,8 +186,8 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 ---
 
 ## Pages Status
-**Built:** home, login, register, dashboard
-**To build:** log, bodyweight tracker (with chart), progress photo grid, profile
+**Built:** home, login, register, dashboard, log — all slices done (#10 Timeline list, #11 entry detail/delete, #12 new-entry form `/log/new`, #13 inline edit, #14 datepicker theming selected=cyan / today=orange); awaiting PR #15 merge
+**To build:** bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
 ---
@@ -180,22 +196,9 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
-### In Progress — same-day rules + edit endpoints (backend, scoped 2026-06-11)
-PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-slice issues, all labeled `ready-for-agent`:
-- [x] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — done, uncommitted
-- [x] #4 — Rest Day creation on a workout date → 409; duplicates tolerated — done, uncommitted
-- [x] #5 — Workout creation overrides same-date Rest Day + override indicator in `WorkoutLogWriteResultDto`; frontend service updated — done 2026-06-11, uncommitted
-- [ ] **Commit #3/#4/#5/#6/#7** — all five slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, then one each for #5/#6/#7); optionally `/review` first.
-- [x] #6 — PUT workout log with same rules; CLAUDE.md "no PUT endpoints" notes updated — done 2026-06-11, uncommitted
-- [x] #7 — PUT rest day with same rules — done 2026-06-12, uncommitted
-- [x] **Day-grained `.Date` queries verified against real PostgreSQL** — done 2026-06-13. SQLite passing didn't prove Npgsql translates `.Date.Date == day` the same way, so this is now covered by the **`Same-Day Rules (Postgres day-grained)` folder in `postman-collection.json`**: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control. All green against Postgres. Re-run that folder after any change to `SameDayRules`.
-
 ### Pages to Build
-- [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:
-  - Combined newest-first timeline of Journal Entries (Workout Logs + Rest Days)
-  - Routes: `/log` (list), `/log/new` (form with Workout/Rest toggle), `/log/workout/:id`, `/log/rest/:id` (detail + edit)
-  - Surfaces the override/409 messaging from issue #2's contracts (e.g. "this replaces your Rest Day")
-  - Photos: detail view displays existing photos; upload waits for `/photos` + Cloudinary
+- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices done on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; body has `Closes #10`/`#11`/`#12`/`#13`/`#14`). **Done:** #10 Timeline list, #11 entry detail + delete, #12 new-entry form (`/log/new`, create + override/409 rules), #13 inline edit on the detail page, #14 datepicker theming (global, selected=cyan / today=orange per spec, in `styles.scss`). **Remaining:** merge PR #15. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+  - Photos: detail view renders a dashed placeholder and ignores the `photos` array (#11); real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
@@ -204,12 +207,23 @@ PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-
 - [ ] **Cloudinary** photo hosting — free tier (25GB storage/bandwidth). Flow: user picks a photo on the frontend → upload directly to Cloudinary → get back a URL → save URL via `POST /api/workoutphoto`. No backend model changes needed, `WorkoutPhoto.Url` already stores a string URL. Tackle this when building the `/photos` page.
 
 ### Chores / Refactors
+- [ ] **E2E / integration tests against real Postgres.** The xUnit suite runs on in-memory SQLite, which can't catch Postgres-specific issues (e.g. the `DateTime.Kind=Unspecified` → timestamptz write error that broke `/log/new` creates — SQLite ignores `Kind`). Today only the manual Postman collection covers real-Postgres behavior. Add an automated end-to-end layer that drives the real API (and ideally the frontend) against an actual Postgres instance — e.g. a Testcontainers-backed `WebApplicationFactory` for the API, and/or Playwright/Cypress for full browser flows — so date/timezone and other provider-specific regressions are caught in CI, not by hand.
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
 - [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
+- [ ] **Token expiry handling (frontend).** `authService.isLoggedIn()` only checks the JWT *exists*, not that it's still valid. An expired-but-present token passes `authGuard`, then every API call 401s (stranding the user instead of redirecting). Harden by checking the token's `exp` claim, and/or treat a 401 response as "clear token + redirect to /login". Not a breach — a correctness/UX bug.
+
+### Security — before public deploy
+> Not urgent while the app is local-only; do these before hosting it anywhere public.
+- [ ] **HTTPS everywhere in production.** A JWT sent over plain HTTP can be sniffed. Local HTTP is fine; ensure the deployed API + frontend are served over TLS (most hosts provide it free) and the app never talks to an `http://` API in prod.
+- [ ] **Rate limiting on `/auth/login` and `/auth/register`.** Without it these are open to password brute-forcing and account-spam. Use .NET 9's built-in rate limiter (`builder.Services.AddRateLimiter(...)` + `app.UseRateLimiter()`), applied at least to the auth endpoints.
+- [ ] **Move the JWT signing key out of `appsettings.Development.json` into a real secret store** for any deploy: .NET User Secrets is dev-only (`~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`, set via `dotnet user-secrets set "Jwt:Key" "..."`); production should read it from environment variables. This key is the master key — a leak lets anyone forge tokens for any user.
+- [ ] **Cloudinary uploads** (when `/photos` ships): use signed uploads (server-generated signature, not an unsigned preset), validate that the URL saved via `POST /api/workoutphoto` is actually a Cloudinary URL, and set size/format limits in Cloudinary.
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard
+- [ ] Pagination / infinite scroll on the `/log` Timeline (currently loads all entries at once; revisit if it gets slow)
+- [ ] **Quick-select for the Workout `Type` field** on the entry form — curated chips/autocomplete (e.g. Push/Pull/Legs, or the user's recent types) instead of free typing. App-driven, not the browser's native autocomplete (which is disabled via `autocomplete="off"`). Keep `Type` freeform — this is a convenience layer, not enum validation (Architecture Rule #4). `MatChips` or `MatAutocomplete`.
 
 ---
 
@@ -248,6 +262,7 @@ ng generate component pages/<name>     # generate new page component
 3. `git switch -c <branch>` carries uncommitted changes onto the new branch, so it's fine to branch even after editing — just always branch before the first commit.
 4. Commit on the branch, push with `git push -u origin <branch>`, then open a PR for review (use `gh pr create`). Do not merge to `main` without the user's go-ahead.
 5. Only commit/push when the user asks.
+6. **Do not add a `Co-Authored-By: Claude` line (or any AI attribution trailer) to commit messages.** Keep commit messages clean — no co-author/attribution footer.
 
 ---
 

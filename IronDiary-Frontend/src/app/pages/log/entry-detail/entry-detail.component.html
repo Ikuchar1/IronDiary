@@ -1,0 +1,42 @@
+<app-entry-form
+  *ngIf="!isLoading && isEditing"
+  mode="edit"
+  [entryId]="id"
+  [kind]="kind"
+  [type]="(workout?.type) || ''"
+  [description]="(workout?.description) || ''"
+  [note]="(rest?.note) || ''"
+  [date]="editDate"
+  (saved)="onSaved()"
+  (cancelled)="isEditing = false"
+></app-entry-form>
+
+<div class="detail" *ngIf="!isLoading && !isEditing">
+
+  <button mat-button class="back-btn" (click)="back()">← Back</button>
+
+  <ng-container *ngIf="kind === 'workout' && workout as w">
+    <span class="entry-badge badge-workout">{{ w.type }}</span>
+    <span class="entry-date">{{ w.date | date: 'EEEE, MMM d, y' : 'UTC' }}</span>
+    <p class="entry-description" *ngIf="w.description">{{ w.description }}</p>
+
+    <!-- Photos placeholder: the photos array is deliberately ignored for now
+         (real grid + upload arrive with the /photos page + Cloudinary). -->
+    <div class="photos-placeholder">
+      <span>Photos</span>
+      <p>Your progress photos will live here.</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="kind === 'rest' && rest as r">
+    <span class="entry-badge badge-rest">Rest</span>
+    <span class="entry-date">{{ r.date | date: 'EEEE, MMM d, y' : 'UTC' }}</span>
+    <p class="entry-note" *ngIf="r.note">{{ r.note }}</p>
+  </ng-container>
+
+  <div class="detail-actions">
+    <button mat-stroked-button class="edit-btn" (click)="edit()">Edit</button>
+    <button mat-stroked-button class="delete-btn" (click)="delete()">Delete</button>
+  </div>
+
+</div>

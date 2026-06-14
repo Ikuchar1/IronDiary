@@ -427,4 +427,9 @@ dist/
 # ASP.NET secrets (IMPORTANT - keeps your DB credentials out of GitHub)
 appsettings.Development.json
 
+# The [Ll]og/ rule above (a .NET build-log ignore) also matches our Angular
+# /log source folder — re-include it (dir first, then contents).
+!IronDiary-Frontend/src/app/pages/log/
+!IronDiary-Frontend/src/app/pages/log/**
+
 .postman.json

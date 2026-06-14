@@ -1,0 +1,92 @@
+@use '../../../../styles/variables' as *;
+
+.detail {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.back-btn {
+  align-self: flex-start;
+  // Pull tight to the top-left so it reads as a page-level "back", not an action.
+  margin: -0.25rem 0 0.25rem -0.5rem;
+  min-width: 0;
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.8;
+  color: $text-muted !important;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $cyan !important;
+    background: rgba($cyan, 0.08);
+  }
+}
+
+.entry-badge {
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+
+  &.badge-workout {
+    background: rgba(0, 188, 212, 0.15);
+    color: $cyan;
+  }
+
+  &.badge-rest {
+    background: rgba(249, 142, 57, 0.15);
+    color: $orange;
+  }
+}
+
+.entry-date {
+  color: $text-muted;
+  font-size: 0.95rem;
+}
+
+.detail-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem; // matches the Save/Cancel spacing on the edit form
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Secondary/destructive action: orange "caution" rather than primary cyan.
+// The confirm dialog still guards the actual delete.
+.delete-btn {
+  border-color: rgba($orange, 0.5) !important;
+  color: $orange !important;
+}
+
+.entry-description,
+.entry-note {
+  margin: 0;
+  color: $text-primary;
+  font-size: 1rem;
+}
+
+.photos-placeholder {
+  margin-top: 1rem;
+  padding: 2rem 1rem;
+  border: 1px dashed $border;
+  border-radius: 12px;
+  text-align: center;
+  color: $text-muted;
+
+  span {
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+  }
+}

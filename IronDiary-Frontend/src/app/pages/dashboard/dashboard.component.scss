@@ -26,7 +26,12 @@
 }
 
 .streak-card {
-  border-color: rgba($cyan, 0.4) !important;
+  border-color: rgba($orange, 0.4) !important;
+
+  // The streak is the "on fire" stat — give its number the orange accent.
+  .stat-value {
+    color: $orange;
+  }
 }
 
 .stat-label {
@@ -98,6 +103,9 @@
       font-size: 20px !important;
       font-weight: 400 !important;
       color: $text-primary !important;
+      display: inline-block;
+      padding-bottom: 6px;
+      border-bottom: 2px solid $orange;
     }
   }
 

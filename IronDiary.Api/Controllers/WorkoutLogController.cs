@@ -39,6 +39,10 @@ public class WorkoutLogController : ControllerBase
     public async Task<IActionResult> CreateLog(CreateWorkoutLogDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        // Stamp the incoming calendar date as UTC so Npgsql can write it to the
+        // timestamptz column. SpecifyKind (not ToUniversalTime) keeps the same
+        // day — converting would shift it, the off-by-one ADR-0003 guards against.
+        dto.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
         var log = new WorkoutLog
         {
             Type = dto.Type,
@@ -61,6 +65,8 @@ public class WorkoutLogController : ControllerBase
 
         if (log == null) return NotFound();
 
+        // See CreateLog: stamp as UTC for the timestamptz column without shifting the day.
+        dto.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
         log.Type = dto.Type;
         log.Description = dto.Description;
         log.Date = dto.Date;

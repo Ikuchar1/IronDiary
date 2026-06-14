@@ -76,8 +76,8 @@ export class DashboardComponent implements OnInit {
     return this.recentLogs[0] ?? null;
   }
 
-  goToLog() {
-    this.router.navigate(['/log']);
+  goToNewEntry() {
+    this.router.navigate(['/log/new']);
   }
 
 }

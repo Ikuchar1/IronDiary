@@ -37,6 +37,9 @@ public class RestDayController : ControllerBase
     public async Task<IActionResult> CreateRestDay(CreateRestDayDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        // Stamp as UTC before any DB use (the same-day query below would fail too).
+        // SpecifyKind keeps the same day; converting would shift it (ADR-0003).
+        dto.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
 
         //ADR-0002: a date with a workout can't also be a rest day
         if (await SameDayRules.HasWorkoutLogOnDateAsync(_context, userId, dto.Date))
@@ -63,6 +66,9 @@ public class RestDayController : ControllerBase
             .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
 
         if (restDay == null) return NotFound();
+
+        // See CreateRestDay: stamp as UTC before the same-day query and write.
+        dto.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
 
         //ADR-0002: a date with a workout can't also be a rest day
         if (await SameDayRules.HasWorkoutLogOnDateAsync(_context, userId, dto.Date))
