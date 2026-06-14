@@ -45,3 +45,24 @@ app-root {
 router-outlet + * {
   flex: 1;
 }
+
+// ── Datepicker calendar accents ──────────────────────
+// The calendar renders in an overlay, so it must be themed globally (not in a
+// component's scoped styles). Selected day = solid orange; today's ring = cyan.
+.mat-datepicker-content {
+  --mat-datepicker-calendar-date-selected-state-background-color: #{$orange};
+  --mat-datepicker-calendar-date-selected-state-text-color: #0a0a0a;
+  --mat-datepicker-calendar-date-today-outline-color: #{$cyan};
+  --mat-datepicker-calendar-date-hover-state-background-color: #{rgba($orange, 0.2)};
+  --mat-datepicker-calendar-date-focus-state-background-color: #{rgba($orange, 0.3)};
+}
+
+// Fallback for older class-based styling in case the tokens above don't apply.
+.mat-calendar-body-selected {
+  background-color: $orange;
+  color: #0a0a0a;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: $cyan;
+}

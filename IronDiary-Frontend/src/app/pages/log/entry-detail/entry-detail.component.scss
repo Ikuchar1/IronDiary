@@ -32,6 +32,17 @@
   font-size: 0.95rem;
 }
 
+.detail-actions {
+  margin-top: 1rem;
+}
+
+// Secondary/destructive action: orange "caution" rather than primary cyan.
+// The confirm dialog still guards the actual delete.
+.delete-btn {
+  border-color: rgba($orange, 0.5) !important;
+  color: $orange !important;
+}
+
 .entry-description,
 .entry-note {
   margin: 0;
