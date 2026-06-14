@@ -194,6 +194,14 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
 - [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
+- [ ] **Token expiry handling (frontend).** `authService.isLoggedIn()` only checks the JWT *exists*, not that it's still valid. An expired-but-present token passes `authGuard`, then every API call 401s (stranding the user instead of redirecting). Harden by checking the token's `exp` claim, and/or treat a 401 response as "clear token + redirect to /login". Not a breach — a correctness/UX bug.
+
+### Security — before public deploy
+> Not urgent while the app is local-only; do these before hosting it anywhere public.
+- [ ] **HTTPS everywhere in production.** A JWT sent over plain HTTP can be sniffed. Local HTTP is fine; ensure the deployed API + frontend are served over TLS (most hosts provide it free) and the app never talks to an `http://` API in prod.
+- [ ] **Rate limiting on `/auth/login` and `/auth/register`.** Without it these are open to password brute-forcing and account-spam. Use .NET 9's built-in rate limiter (`builder.Services.AddRateLimiter(...)` + `app.UseRateLimiter()`), applied at least to the auth endpoints.
+- [ ] **Move the JWT signing key out of `appsettings.Development.json` into a real secret store** for any deploy: .NET User Secrets is dev-only (`~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`, set via `dotnet user-secrets set "Jwt:Key" "..."`); production should read it from environment variables. This key is the master key — a leak lets anyone forge tokens for any user.
+- [ ] **Cloudinary uploads** (when `/photos` ships): use signed uploads (server-generated signature, not an unsigned preset), validate that the URL saved via `POST /api/workoutphoto` is actually a Cloudinary URL, and set size/format limits in Cloudinary.
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard
