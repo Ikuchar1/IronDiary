@@ -180,22 +180,9 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
-### In Progress — same-day rules + edit endpoints (backend, scoped 2026-06-11)
-PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-slice issues, all labeled `ready-for-agent`:
-- [x] #3 — integration test harness (`IronDiary.Api.Tests`, xUnit + WebApplicationFactory) — done, uncommitted
-- [x] #4 — Rest Day creation on a workout date → 409; duplicates tolerated — done, uncommitted
-- [x] #5 — Workout creation overrides same-date Rest Day + override indicator in `WorkoutLogWriteResultDto`; frontend service updated — done 2026-06-11, uncommitted
-- [ ] **Commit #3/#4/#5/#6/#7** — all five slices sit uncommitted on `feature/log-page`. Commit slice-by-slice so they stay reviewable (e.g. one commit for #3+#4, then one each for #5/#6/#7); optionally `/review` first.
-- [x] #6 — PUT workout log with same rules; CLAUDE.md "no PUT endpoints" notes updated — done 2026-06-11, uncommitted
-- [x] #7 — PUT rest day with same rules — done 2026-06-12, uncommitted
-- [x] **Day-grained `.Date` queries verified against real PostgreSQL** — done 2026-06-13. SQLite passing didn't prove Npgsql translates `.Date.Date == day` the same way, so this is now covered by the **`Same-Day Rules (Postgres day-grained)` folder in `postman-collection.json`**: same-calendar-day-different-time scenarios (409 on Rest Day create/PUT, override on Workout create/PUT) plus a different-day negative control. All green against Postgres. Re-run that folder after any change to `SameDayRules`.
-
 ### Pages to Build
-- [ ] `/log` — **needs its own PRD before building** (write it next, after issue #2's slices land). Scope already agreed 2026-06-11:
-  - Combined newest-first timeline of Journal Entries (Workout Logs + Rest Days)
-  - Routes: `/log` (list), `/log/new` (form with Workout/Rest toggle), `/log/workout/:id`, `/log/rest/:id` (detail + edit)
-  - Surfaces the override/409 messaging from issue #2's contracts (e.g. "this replaces your Rest Day")
-  - Photos: detail view displays existing photos; upload waits for `/photos` + Cloudinary
+- [ ] `/log` — **frontend Timeline page; PRD written and sliced (GitHub issue #9 → slices #10–#14, all `ready-for-agent`).** Backend (same-day rules + PUT endpoints + xUnit tests) is done and merged via PR #8. Build order: #10 (Timeline list) → #11/#12 (detail+delete / new form) → #13 (inline edit); #14 (datepicker theming) any time after #12. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+  - Photos: detail view shows a placeholder for now; real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
@@ -210,6 +197,7 @@ PRD: **GitHub issue #2** (see also CONTEXT.md + ADR-0002). Broken into vertical-
 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard
+- [ ] Pagination / infinite scroll on the `/log` Timeline (currently loads all entries at once; revisit if it gets slow)
 
 ---
 
