@@ -1,0 +1,59 @@
+@use '../../../../styles/variables' as *;
+
+.detail {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entry-badge {
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+
+  &.badge-workout {
+    background: rgba(0, 188, 212, 0.15);
+    color: $cyan;
+  }
+
+  &.badge-rest {
+    background: rgba(249, 142, 57, 0.15);
+    color: $orange;
+  }
+}
+
+.entry-date {
+  color: $text-muted;
+  font-size: 0.95rem;
+}
+
+.entry-description,
+.entry-note {
+  margin: 0;
+  color: $text-primary;
+  font-size: 1rem;
+}
+
+.photos-placeholder {
+  margin-top: 1rem;
+  padding: 2rem 1rem;
+  border: 1px dashed $border;
+  border-radius: 12px;
+  text-align: center;
+  color: $text-muted;
+
+  span {
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+  }
+}
