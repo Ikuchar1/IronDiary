@@ -62,6 +62,15 @@ describe('LogComponent', () => {
     expect(text()).toContain('sore knees');
   });
 
+  it('renders the entry date in UTC so the stored calendar day never shifts by timezone', () => {
+    // Entries are stored at midnight UTC (ADR-0003). Rendering in the viewer's
+    // local zone would roll a negative-offset user back a day; UTC keeps the
+    // logged calendar day. Most meaningful when the runner is behind UTC.
+    flush([{ id: 1, type: 'Push', date: '2026-06-14T00:00:00Z' }], []);
+    expect(text()).toContain('Jun 14');
+    expect(text()).not.toContain('Jun 13');
+  });
+
   it('shows a spinner while loading, before data resolves', () => {
     fixture.detectChanges(); // ngOnInit fires the requests; nothing flushed yet
 

@@ -27,7 +27,7 @@
           >
             {{ entry.kind === 'workout' ? entry.data.type : 'Rest' }}
           </span>
-          <span class="entry-date">{{ entry.date | date: 'EEEE, MMM d' }}</span>
+          <span class="entry-date">{{ entry.date | date: 'EEEE, MMM d' : 'UTC' }}</span>
         </div>
 
         <p
