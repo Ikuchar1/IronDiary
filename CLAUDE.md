@@ -106,23 +106,29 @@ IronDiary-Frontend/src/
 │   │   ├── interceptors/
 │   │   │   └── auth.interceptor.ts    ← functional HttpInterceptorFn; attaches Bearer token
 │   │   ├── models/
-│   │   │   ├── workout-log.model.ts   ← WorkoutPhotoDto, WorkoutLogDto, WorkoutLogDetailDto, CreateWorkoutLogDto
+│   │   │   ├── workout-log.model.ts   ← WorkoutPhotoDto, WorkoutLogDto, WorkoutLogDetailDto, WorkoutLogWriteResultDto, CreateWorkoutLogDto
 │   │   │   ├── body-weight.model.ts   ← BodyWeightLogDto, CreateBodyWeightLogDto
-│   │   │   └── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
-│   │   └── services/
-│   │       ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
-│   │       ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
-│   │       ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
-│   │       └── rest-day.service.ts
+│   │   │   ├── rest-day.model.ts      ← RestDayDto, CreateRestDayDto
+│   │   │   └── journal-entry.model.ts ← JournalEntry discriminated union (frontend-only view model: { kind, id, date, data })
+│   │   ├── services/
+│   │   │   ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
+│   │   │   ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
+│   │   │   ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
+│   │   │   └── rest-day.service.ts
+│   │   └── utils/
+│   │       ├── streak.util.ts          ← calculateStreak (+ spec)
+│   │       └── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
 │   ├── pages/
 │   │   ├── home/           ← public landing page (hero, features, how-it-works)
 │   │   ├── login/          ← login form
 │   │   ├── register/       ← register form
-│   │   └── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
+│   │   ├── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
+│   │   └── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete)
 │   └── shared/
 │       └── components/
 │           ├── navbar/
-│           └── footer/
+│           ├── footer/
+│           └── confirm-dialog/   ← reusable MatDialog confirm body (ConfirmDialogComponent; closes true/false)
 ├── environments/
 │   ├── environment.ts             ← production placeholder (not yet configured — app is local only)
 │   └── environment.development.ts ← local dev (apiUrl: 'http://localhost:5092/api')
@@ -150,8 +156,11 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /login | LoginComponent | none |
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
+| /log | LogComponent (Timeline list) | authGuard |
+| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
+| /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
 
-Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
+Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, `/profile`. Inline edit on the detail routes is #13.
 
 ### Frontend Key Patterns
 - All components are standalone (no NgModules)
@@ -160,7 +169,8 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 - JWT stored in `localStorage` under key `'token'`, attached via functional interceptor
 - `authGuard` is a functional guard (not class-based `CanActivate`)
 - `authInterceptor` is a functional `HttpInterceptorFn`
-- Angular Material used for UI components (MatCard, MatButton, MatList, MatChips, MatProgressSpinner confirmed in use)
+- Angular Material used for UI components (MatCard, MatButton, MatList, MatChips, MatProgressSpinner, MatDialog confirmed in use)
+- Delete confirmation uses the shared `ConfirmDialogComponent` via `MatDialog`; the dialog returns `true`/`false` through `afterClosed()`
 - Pages use `.scss`; some older shared components still have `.css` files alongside (do not rename)
 
 ### Known Frontend Issues / Gotchas
@@ -171,7 +181,8 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 
 ## Pages Status
 **Built:** home, login, register, dashboard
-**To build:** log, bodyweight tracker (with chart), progress photo grid, profile
+**In progress:** log — Timeline list (#10) + entry detail/delete (#11) done; remaining: new-entry form `/log/new` (#12), inline edit (#13), datepicker theming (#14)
+**To build:** bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
 ---
@@ -181,8 +192,8 @@ Routes still to build: `/log`, `/bodyweight`, `/photos`, `/profile`
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/log` — **frontend Timeline page; PRD written and sliced (GitHub issue #9 → slices #10–#14, all `ready-for-agent`).** Backend (same-day rules + PUT endpoints + xUnit tests) is done and merged via PR #8. Build order: #10 (Timeline list) → #11/#12 (detail+delete / new form) → #13 (inline edit); #14 (datepicker theming) any time after #12. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
-  - Photos: detail view shows a placeholder for now; real display + upload waits for `/photos` + Cloudinary
+- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices land on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; `Closes #10`/`#11` accumulating as slices land). **Done:** #10 Timeline list, #11 entry detail + delete. **Remaining:** #12 new-entry form (`/log/new`, create + override/409 rules), #13 inline edit on the detail page, #14 datepicker theming. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+  - Photos: detail view renders a dashed placeholder and ignores the `photos` array (#11); real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
