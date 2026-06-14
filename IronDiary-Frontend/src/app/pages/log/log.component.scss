@@ -47,12 +47,12 @@
   border-radius: 999px;
 
   &.badge-workout {
-    background: rgba(0, 188, 212, 0.15);
+    background: rgba($cyan, 0.15);
     color: $cyan;
   }
 
   &.badge-rest {
-    background: rgba(249, 142, 57, 0.15);
+    background: rgba($orange, 0.15);
     color: $orange;
   }
 }
