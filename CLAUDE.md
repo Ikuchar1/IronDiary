@@ -1,5 +1,8 @@
 # IronDiary — Project Context - Last Updated June 12th 2026
 
+## Interaction
+- Start every single reply to the user with their name, "Ian".
+
 ## Overview
 Personal fitness journal web app. Users log workouts (freeform type — Push/Pull/Legs or anything else), rest days, bodyweight entries, and progress photos. Features: streak tracking, bodyweight chart, progress photo grid. Deployed as a mobile-friendly web app for gym use.
 
@@ -77,6 +80,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - Swagger configured with Bearer auth for testing protected endpoints
 - CORS currently only allows `http://localhost:4200`
 - JWT config keys: `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` (from appsettings / env vars)
+- **Entry `Date` columns are Postgres `timestamptz`, which Npgsql only writes when `DateTime.Kind == Utc`.** Every write path (WorkoutLog/RestDay POST + PUT) stamps the incoming `dto.Date` with `DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc)` **before** any DB use (the same-day query fails on `Unspecified` too). Use `SpecifyKind`, **not** `ToUniversalTime()` — converting would shift the calendar day and reintroduce the off-by-one ADR-0003 guards against. The frontend sends a bare `YYYY-MM-DD` (ADR-0003), which binds to midnight-`Unspecified`; the range query already did this at `WorkoutLogController` GET `/range`.
 
 ### Known Backend Issues
 - No UPDATE (PUT) endpoint on WorkoutPhoto or BodyWeightLog
@@ -117,13 +121,14 @@ IronDiary-Frontend/src/
 │   │   │   └── rest-day.service.ts
 │   │   └── utils/
 │   │       ├── streak.util.ts          ← calculateStreak (+ spec)
-│   │       └── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
+│   │       ├── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
+│   │       └── local-date.util.ts      ← toLocalDateString: YYYY-MM-DD from LOCAL calendar parts, never toISOString (ADR-0003) (+ spec)
 │   ├── pages/
 │   │   ├── home/           ← public landing page (hero, features, how-it-works)
 │   │   ├── login/          ← login form
 │   │   ├── register/       ← register form
 │   │   ├── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
-│   │   └── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete)
+│   │   └── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete); entry-form/ (EntryFormComponent — /log/new create form, Workout/Rest toggle)
 │   └── shared/
 │       └── components/
 │           ├── navbar/
@@ -157,10 +162,11 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
 | /log | LogComponent (Timeline list) | authGuard |
+| /log/new | EntryFormComponent (create: Workout/Rest toggle) | authGuard |
 | /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
 | /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
 
-Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, `/profile`. Inline edit on the detail routes is #13.
+Routes still to build: `/bodyweight`, `/photos`, `/profile`. Inline edit on the detail routes is #13.
 
 ### Frontend Key Patterns
 - All components are standalone (no NgModules)
@@ -181,7 +187,7 @@ Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, 
 
 ## Pages Status
 **Built:** home, login, register, dashboard
-**In progress:** log — Timeline list (#10) + entry detail/delete (#11) done; remaining: new-entry form `/log/new` (#12), inline edit (#13), datepicker theming (#14)
+**In progress:** log — Timeline list (#10), entry detail/delete (#11), new-entry form `/log/new` (#12) done; remaining: inline edit (#13), datepicker theming (#14 — colors partially done but inverted vs spec, see backlog)
 **To build:** bodyweight tracker (with chart), progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
@@ -192,7 +198,8 @@ Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, 
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices land on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; `Closes #10`/`#11` accumulating as slices land). **Done:** #10 Timeline list, #11 entry detail + delete. **Remaining:** #12 new-entry form (`/log/new`, create + override/409 rules), #13 inline edit on the detail page, #14 datepicker theming. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+- [ ] `/log` — **frontend Timeline page (GitHub issue #9, sliced into #10–#14).** All slices land on branch `feature/log-page-ui` → **PR #15** (one branch, one merge; `Closes #10`/`#11`/`#12` accumulating as slices land). **Done:** #10 Timeline list, #11 entry detail + delete, #12 new-entry form (`/log/new`, create + override/409 rules). **Remaining:** #13 inline edit on the detail page, #14 datepicker theming. Design captured in CONTEXT.md (Timeline term), ADR-0002 (override rules), and ADR-0003 (local date formatting).
+  - **#14 color decision is unresolved:** the issue spec says selected date = cyan, today ring = orange, but the datepicker was themed live to the *inverse* (selected = orange, today = cyan) per author preference. Reconcile before closing #14 — either update the issue/ADR to match, or flip the colors in `styles.scss`.
   - Photos: detail view renders a dashed placeholder and ignores the `photos` array (#11); real display + upload waits for `/photos` + Cloudinary
 - [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
@@ -202,6 +209,7 @@ Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, 
 - [ ] **Cloudinary** photo hosting — free tier (25GB storage/bandwidth). Flow: user picks a photo on the frontend → upload directly to Cloudinary → get back a URL → save URL via `POST /api/workoutphoto`. No backend model changes needed, `WorkoutPhoto.Url` already stores a string URL. Tackle this when building the `/photos` page.
 
 ### Chores / Refactors
+- [ ] **E2E / integration tests against real Postgres.** The xUnit suite runs on in-memory SQLite, which can't catch Postgres-specific issues (e.g. the `DateTime.Kind=Unspecified` → timestamptz write error that broke `/log/new` creates — SQLite ignores `Kind`). Today only the manual Postman collection covers real-Postgres behavior. Add an automated end-to-end layer that drives the real API (and ideally the frontend) against an actual Postgres instance — e.g. a Testcontainers-backed `WebApplicationFactory` for the API, and/or Playwright/Cypress for full browser flows — so date/timezone and other provider-specific regressions are caught in CI, not by hand.
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
 - [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
@@ -217,6 +225,7 @@ Routes still to build: `/log/new` (create form, #12), `/bodyweight`, `/photos`, 
 ### Future / Nice to Have
 - [ ] GitHub-style activity graph on dashboard
 - [ ] Pagination / infinite scroll on the `/log` Timeline (currently loads all entries at once; revisit if it gets slow)
+- [ ] **Quick-select for the Workout `Type` field** on the entry form — curated chips/autocomplete (e.g. Push/Pull/Legs, or the user's recent types) instead of free typing. App-driven, not the browser's native autocomplete (which is disabled via `autocomplete="off"`). Keep `Type` freeform — this is a convenience layer, not enum validation (Architecture Rule #4). `MatChips` or `MatAutocomplete`.
 
 ---
 
