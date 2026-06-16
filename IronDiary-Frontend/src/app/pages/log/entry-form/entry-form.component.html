@@ -61,6 +61,20 @@
     </mat-form-field>
   }
 
+  @if (mode === 'create') {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Weight (lb)</mat-label>
+      <input
+        matInput
+        type="number"
+        name="weight"
+        autocomplete="off"
+        min="0"
+        [(ngModel)]="weight"
+      />
+    </mat-form-field>
+  }
+
   @if (errorMessage) {
     <p class="form-error">{{ errorMessage }}</p>
   }
