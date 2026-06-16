@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { BodyWeightService } from '../../core/services/body-weight.service';
-import { dedupeByDay } from '../../core/utils/bodyweight-series.util';
+import { BodyWeightLogDto } from '../../core/models/body-weight.model';
+import { ChartRange, dedupeByDay, filterByRange } from '../../core/utils/bodyweight-series.util';
 
 // Register Chart.js components once, globally, so BaseChartDirective can render
 // the line chart wherever this component is used (app and tests alike).
@@ -17,7 +19,7 @@ const GRID = 'rgba(255, 255, 255, 0.08)';
 @Component({
   selector: 'app-bodyweight',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, MatButtonToggleModule, BaseChartDirective],
   templateUrl: './bodyweight.component.html',
   styleUrl: './bodyweight.component.scss'
 })
@@ -25,6 +27,10 @@ export class BodyweightComponent implements OnInit {
   lineChartData: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
   hasData = false;
   isLoading = true;
+  range: ChartRange = 'all';
+
+  // Deduped full series, kept in memory so range changes re-filter without refetching.
+  private allLogs: BodyWeightLogDto[] = [];
 
   lineChartOptions: ChartConfiguration<'line'>['options'] = {
     responsive: true,
@@ -47,26 +53,38 @@ export class BodyweightComponent implements OnInit {
   loadLogs() {
     this.bodyWeightService.getAll().subscribe({
       next: (logs) => {
-        const series = dedupeByDay(logs);
-        this.hasData = series.length > 0;
-        this.lineChartData = {
-          labels: series.map(l => l.date.slice(0, 10)),
-          datasets: [
-            {
-              data: series.map(l => l.weight),
-              label: 'Weight (lbs)',
-              borderColor: CYAN,
-              pointBackgroundColor: ORANGE,
-              pointBorderColor: ORANGE,
-              tension: 0.3
-            }
-          ]
-        };
+        this.allLogs = dedupeByDay(logs);
+        this.updateChart();
         this.isLoading = false;
       },
       error: () => {
         this.isLoading = false;
       }
     });
+  }
+
+  setRange(range: ChartRange) {
+    this.range = range;
+    this.updateChart();
+  }
+
+  // Re-derives the chart series from the in-memory deduped logs for the current
+  // range. No HTTP -- switching the window never refetches.
+  private updateChart() {
+    const series = filterByRange(this.allLogs, this.range, new Date());
+    this.hasData = series.length > 0;
+    this.lineChartData = {
+      labels: series.map(l => l.date.slice(0, 10)),
+      datasets: [
+        {
+          data: series.map(l => l.weight),
+          label: 'Weight (lbs)',
+          borderColor: CYAN,
+          pointBackgroundColor: ORANGE,
+          pointBorderColor: ORANGE,
+          tension: 0.3
+        }
+      ]
+    };
   }
 }

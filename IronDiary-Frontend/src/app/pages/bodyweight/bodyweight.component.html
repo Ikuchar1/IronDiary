@@ -1,6 +1,17 @@
 <section class="bodyweight-page">
   <h1>Bodyweight</h1>
 
+  <mat-button-toggle-group
+    class="range-toggle"
+    [value]="range"
+    (change)="setRange($event.value)"
+    aria-label="Chart time window"
+  >
+    <mat-button-toggle value="month">Past month</mat-button-toggle>
+    <mat-button-toggle value="year">Past year</mat-button-toggle>
+    <mat-button-toggle value="all">All time</mat-button-toggle>
+  </mat-button-toggle-group>
+
   @if (isLoading) {
     <p class="state-msg">Loading…</p>
   } @else if (hasData) {

@@ -1,4 +1,4 @@
-import { dedupeByDay } from './bodyweight-series.util';
+import { dedupeByDay, filterByRange } from './bodyweight-series.util';
 import { BodyWeightLogDto } from '../models/body-weight.model';
 
 describe('dedupeByDay', () => {
@@ -28,5 +28,27 @@ describe('dedupeByDay', () => {
     expect(result.length).toBe(1);
     expect(result[0].id).toBe(9);
     expect(result[0].weight).toBe(179);
+  });
+});
+
+describe('filterByRange', () => {
+  const NOW = new Date(2026, 5, 15, 12, 0, 0); // 2026-06-15 local noon
+
+  const logs: BodyWeightLogDto[] = [
+    { id: 1, weight: 180, date: '2026-06-10T00:00:00Z' }, // 5 days ago
+    { id: 2, weight: 181, date: '2026-03-01T00:00:00Z' }, // ~3.5 months ago
+    { id: 3, weight: 182, date: '2025-01-01T00:00:00Z' }, // ~1.5 years ago
+  ];
+
+  it('returns all logs for the "all" range', () => {
+    expect(filterByRange(logs, 'all', NOW).map(l => l.id)).toEqual([1, 2, 3]);
+  });
+
+  it('keeps only logs within the past month', () => {
+    expect(filterByRange(logs, 'month', NOW).map(l => l.id)).toEqual([1]);
+  });
+
+  it('keeps only logs within the past year', () => {
+    expect(filterByRange(logs, 'year', NOW).map(l => l.id)).toEqual([1, 2]);
   });
 });

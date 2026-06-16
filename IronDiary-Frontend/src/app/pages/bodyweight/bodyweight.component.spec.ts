@@ -14,6 +14,14 @@ describe('BodyweightComponent', () => {
 
   const apiUrl = `${environment.apiUrl}/bodyweightlog`;
 
+  // An ISO date string N days before now (local noon, so no TZ day-crossing).
+  function daysAgoIso(n: number): string {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - n);
+    return d.toISOString();
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BodyweightComponent],
@@ -56,5 +64,33 @@ describe('BodyweightComponent', () => {
 
     expect(component.hasData).toBeFalse();
     expect(component.lineChartData.datasets[0]?.data ?? []).toEqual([]);
+  });
+
+  it('defaults the range to all time', () => {
+    fixture.detectChanges();
+    httpMock.expectOne(apiUrl).flush([]);
+
+    expect(component.range).toBe('all');
+  });
+
+  it('narrows the series fed to the chart when the range changes, without refetching', () => {
+    const logs: BodyWeightLogDto[] = [
+      { id: 1, weight: 180, date: daysAgoIso(5) },
+      { id: 2, weight: 181, date: daysAgoIso(100) },
+      { id: 3, weight: 182, date: daysAgoIso(400) },
+    ];
+
+    fixture.detectChanges();
+    httpMock.expectOne(apiUrl).flush(logs);
+
+    expect(component.lineChartData.datasets[0].data?.length).toBe(3); // all time
+
+    component.setRange('month');
+    expect(component.lineChartData.datasets[0].data?.length).toBe(1);
+
+    component.setRange('year');
+    expect(component.lineChartData.datasets[0].data?.length).toBe(2);
+
+    // afterEach httpMock.verify() asserts no second GET was issued.
   });
 });

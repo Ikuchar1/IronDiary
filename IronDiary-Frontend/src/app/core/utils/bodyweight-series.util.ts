@@ -1,5 +1,8 @@
 import { BodyWeightLogDto } from '../models/body-weight.model';
 
+/** Time window for the bodyweight chart. */
+export type ChartRange = 'month' | 'year' | 'all';
+
 /**
  * Collapses Bodyweight Logs to one per calendar day for charting.
  *
@@ -22,4 +25,30 @@ export function dedupeByDay(logs: BodyWeightLogDto[]): BodyWeightLogDto[] {
     }
   }
   return [...byDay.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Narrows a series to a time window relative to `now`.
+ *
+ * `'all'` returns every log; `'month'` / `'year'` keep only logs dated on or
+ * after one month / one year before `now`. `now` is injected so the windowing
+ * is deterministic and testable.
+ */
+export function filterByRange(
+  logs: BodyWeightLogDto[],
+  range: ChartRange,
+  now: Date
+): BodyWeightLogDto[] {
+  if (range === 'all') {
+    return logs;
+  }
+
+  const cutoff = new Date(now);
+  if (range === 'month') {
+    cutoff.setMonth(cutoff.getMonth() - 1);
+  } else {
+    cutoff.setFullYear(cutoff.getFullYear() - 1);
+  }
+
+  return logs.filter(log => new Date(log.date) >= cutoff);
 }
