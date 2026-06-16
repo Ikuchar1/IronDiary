@@ -30,6 +30,12 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'bodyweight',
+    loadComponent: () =>
+      import('./pages/bodyweight/bodyweight.component').then(m => m.BodyweightComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'log/workout/:id',
     component: EntryDetailComponent,
     canActivate: [authGuard],

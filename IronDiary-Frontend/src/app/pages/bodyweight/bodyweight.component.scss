@@ -1,0 +1,30 @@
+@use '../../../styles/variables' as *;
+
+.bodyweight-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+
+  h1 {
+    color: $text-primary;
+    margin-bottom: 1rem;
+  }
+}
+
+.chart-wrap {
+  position: relative;
+  height: 320px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.state-msg {
+  color: $text-muted;
+
+  &.empty {
+    text-align: center;
+    padding: 2rem 0;
+  }
+}

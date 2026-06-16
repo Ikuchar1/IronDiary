@@ -1,0 +1,18 @@
+<section class="bodyweight-page">
+  <h1>Bodyweight</h1>
+
+  @if (isLoading) {
+    <p class="state-msg">Loading…</p>
+  } @else if (hasData) {
+    <div class="chart-wrap">
+      <canvas
+        baseChart
+        type="line"
+        [data]="lineChartData"
+        [options]="lineChartOptions"
+      ></canvas>
+    </div>
+  } @else {
+    <p class="state-msg empty">No bodyweight logged yet.</p>
+  }
+</section>

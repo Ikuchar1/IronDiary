@@ -16,6 +16,7 @@
 
   @if (isLoggedIn()) {
     <a mat-button routerLink="/log" routerLinkActive="active-link">Timeline</a>
+    <a mat-button routerLink="/bodyweight" routerLinkActive="active-link">Bodyweight</a>
     <button mat-button (click)="logout()">Logout</button>
   } @else {
     <a mat-button routerLink="/login">Login</a>

@@ -1,0 +1,72 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BaseChartDirective } from 'ng2-charts';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { BodyWeightService } from '../../core/services/body-weight.service';
+import { dedupeByDay } from '../../core/utils/bodyweight-series.util';
+
+// Register Chart.js components once, globally, so BaseChartDirective can render
+// the line chart wherever this component is used (app and tests alike).
+Chart.register(...registerables);
+
+const CYAN = '#00BCD4';
+const ORANGE = '#f98e39';
+const TEXT = '#f0f0f0';
+const GRID = 'rgba(255, 255, 255, 0.08)';
+
+@Component({
+  selector: 'app-bodyweight',
+  standalone: true,
+  imports: [CommonModule, BaseChartDirective],
+  templateUrl: './bodyweight.component.html',
+  styleUrl: './bodyweight.component.scss'
+})
+export class BodyweightComponent implements OnInit {
+  lineChartData: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
+  hasData = false;
+  isLoading = true;
+
+  lineChartOptions: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: TEXT } }
+    },
+    scales: {
+      x: { ticks: { color: TEXT }, grid: { color: GRID } },
+      y: { ticks: { color: TEXT }, grid: { color: GRID } }
+    }
+  };
+
+  constructor(private bodyWeightService: BodyWeightService) {}
+
+  ngOnInit() {
+    this.loadLogs();
+  }
+
+  loadLogs() {
+    this.bodyWeightService.getAll().subscribe({
+      next: (logs) => {
+        const series = dedupeByDay(logs);
+        this.hasData = series.length > 0;
+        this.lineChartData = {
+          labels: series.map(l => l.date.slice(0, 10)),
+          datasets: [
+            {
+              data: series.map(l => l.weight),
+              label: 'Weight (lbs)',
+              borderColor: CYAN,
+              pointBackgroundColor: ORANGE,
+              pointBorderColor: ORANGE,
+              tension: 0.3
+            }
+          ]
+        };
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+}
