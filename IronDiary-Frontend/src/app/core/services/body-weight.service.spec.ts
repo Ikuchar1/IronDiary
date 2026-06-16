@@ -68,6 +68,20 @@ describe('BodyWeightService', () => {
     req.flush(mockResponse);
   });
 
+  it('should PUT an updated bodyweight log by id', () => {
+    const dto: CreateBodyWeightLogDto = { weight: 178.5, date: '2026-03-03' };
+    const mockResponse: BodyWeightLogDto = { id: 5, weight: 178.5, date: '2026-03-03T00:00:00Z' };
+
+    service.update(5, dto).subscribe(result => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/5`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(dto);
+    req.flush(mockResponse);
+  });
+
   it('should DELETE a bodyweight log by id', () => {
     service.delete(1).subscribe(response => {
       expect(response).toBeNull();

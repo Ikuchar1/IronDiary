@@ -21,6 +21,10 @@ export class BodyWeightService {
     return this.http.post<BodyWeightLogDto>(this.apiUrl, dto);
   }
 
+  update(id: number, dto: CreateBodyWeightLogDto) {
+    return this.http.put<BodyWeightLogDto>(`${this.apiUrl}/${id}`, dto);
+  }
+
   delete(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

@@ -41,7 +41,10 @@ public class BodyWeightLogController : ControllerBase
         var log = new BodyWeightLog
         {
             Weight = dto.Weight,
-            Date = dto.Date
+            // Stamp Utc (not ToUniversalTime) so Npgsql can write the timestamptz
+            // without shifting the calendar day. The frontend sends a bare
+            // YYYY-MM-DD, which binds to midnight-Unspecified. See ADR-0003.
+            Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc)
         };
         
         log.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -71,6 +74,37 @@ public class BodyWeightLogController : ControllerBase
         {
             return NotFound();
         }
+
+        return Ok(new BodyWeightLogDto
+        {
+            Id = log.Id,
+            Weight = log.Weight,
+            Date = log.Date
+        });
+    }
+
+    //update by id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBodyWeightLog(int id, CreateBodyWeightLogDto dto)
+    {
+        var log = await _context.BodyWeightLogs.FindAsync(id);
+
+        if (log == null)
+        {
+            return NotFound();
+        }
+
+        //make sure it belongs to current user
+        if (log.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            return NotFound();
+        }
+
+        log.Weight = dto.Weight;
+        // Stamp Utc (not ToUniversalTime) so Npgsql can write the timestamptz
+        // without shifting the calendar day. See ADR-0003.
+        log.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
+        await _context.SaveChangesAsync();
 
         return Ok(new BodyWeightLogDto
         {
