@@ -52,11 +52,12 @@ export class BodyweightComponent implements OnInit {
   isLoading = true;
   range: ChartRange = 'all';
 
-  // Deduped full series, kept in memory so range changes re-filter without refetching.
+  // Deduped full series (one point per calendar day), kept in memory so range
+  // changes re-filter without refetching. Drives the chart only.
   private allLogs: BodyWeightLogDto[] = [];
 
-  // Newest-first view of `allLogs` for the list below the chart. Same source as
-  // the chart so the two can never disagree; `allLogs` is oldest-first, reversed.
+  // Every weigh-in, newest-first, for the list below the chart. NOT deduped --
+  // same-day duplicates must stay visible so the user can delete the stray one.
   entries: BodyWeightLogDto[] = [];
 
   // Add-form models. Weight starts blank; date defaults to today (ADR-0003).
@@ -78,7 +79,9 @@ export class BodyweightComponent implements OnInit {
     },
     scales: {
       x: { ticks: { color: TEXT }, grid: { color: GRID } },
-      y: { ticks: { color: TEXT }, grid: { color: GRID } }
+      // `grace` pads the axis a few pounds beyond the min/max so the highest and
+      // lowest weigh-ins don't sit flush against the top/bottom edges.
+      y: { ticks: { color: TEXT }, grid: { color: GRID }, grace: 3 }
     }
   };
 
@@ -95,7 +98,8 @@ export class BodyweightComponent implements OnInit {
     this.bodyWeightService.getAll().subscribe({
       next: (logs) => {
         this.allLogs = dedupeByDay(logs);
-        this.entries = [...this.allLogs].reverse();
+        // List keeps every log, newest-first; tie-break same-day logs by id desc.
+        this.entries = [...logs].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
         this.updateChart();
         this.isLoading = false;
       },
@@ -155,8 +159,7 @@ export class BodyweightComponent implements OnInit {
     });
   }
 
-  // Editing a weigh-in is delete + re-add (no PUT on BodyWeightLog). Confirm via
-  // the shared dialog, then re-load so the chart and list both refresh.
+  // Confirm via the shared dialog, then re-load so the chart and list both refresh.
   deleteEntry(id: number) {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {

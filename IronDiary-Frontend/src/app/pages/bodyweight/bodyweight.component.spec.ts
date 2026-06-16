@@ -111,10 +111,10 @@ describe('BodyweightComponent', () => {
     // afterEach httpMock.verify() asserts no second GET was issued.
   });
 
-  it('lists the deduped weigh-ins newest-first below the chart', () => {
+  it('lists every weigh-in newest-first, keeping same-day duplicates', () => {
     const logs: BodyWeightLogDto[] = [
       { id: 1, weight: 180, date: '2026-03-01T08:00:00Z' },
-      { id: 4, weight: 178, date: '2026-03-01T20:00:00Z' }, // same day -> wins
+      { id: 4, weight: 178, date: '2026-03-01T20:00:00Z' }, // same day, later
       { id: 2, weight: 182, date: '2026-03-03T00:00:00Z' },
     ];
 
@@ -122,13 +122,15 @@ describe('BodyweightComponent', () => {
     httpMock.expectOne(apiUrl).flush(logs);
     fixture.detectChanges();
 
-    // One row per calendar day, newest first (single source shared with the chart).
-    expect(component.entries.map(e => e.id)).toEqual([2, 4]);
+    // List shows ALL logs (unlike the deduped chart) so a stray same-day weigh-in
+    // stays visible and deletable; newest-first, same-day tie-broken by id desc.
+    expect(component.entries.map(e => e.id)).toEqual([2, 4, 1]);
 
     const rows = (fixture.nativeElement as HTMLElement).querySelectorAll('.entry-row');
-    expect(rows.length).toBe(2);
+    expect(rows.length).toBe(3);
     expect(rows[0].textContent).toContain('182');
     expect(rows[1].textContent).toContain('178');
+    expect(rows[2].textContent).toContain('180');
   });
 
   it('shows a list empty state when there are no weigh-ins', () => {

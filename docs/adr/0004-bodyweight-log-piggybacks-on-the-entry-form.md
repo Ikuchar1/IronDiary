@@ -14,4 +14,6 @@ The weight field is **create-only**: it appears on `/log/new`, not on the inline
 
 - Two endpoints, no transaction: the form must order the writes (entry first) and tolerate partial failure without rolling back the primary record. There is deliberately **no** compensating delete.
 - The glossary boundary holds: sharing a *form* does not make a Bodyweight Log a Journal Entry — the form is UI, not a domain concept. CONTEXT.md remains the source of truth.
-- Because weight is create-only here, editing or removing a Bodyweight Log lives solely on `/bodyweight` (delete + re-add; there is no PUT on BodyWeightLog).
+- Because weight is create-only here, editing or removing a Bodyweight Log lives solely on `/bodyweight`.
+
+> **Superseded (2026-06-16, #19):** the original decision was that BodyWeightLog had no PUT and edits were delete + re-add. `/bodyweight` now supports inline edit via a real `PUT /api/bodyweightlog/{id}`. The create-only / dual-write / no-rollback decisions on the *entry form* above still stand — only the "no PUT" consequence is reversed.

@@ -65,10 +65,10 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 | AuthController | POST /api/auth/register, POST /api/auth/login |
 | WorkoutLogController | GET /api/workoutlog, POST /api/workoutlog, GET /api/workoutlog/{id}, PUT /api/workoutlog/{id}, DELETE /api/workoutlog/{id}, GET /api/workoutlog/range?startDate=&endDate= |
 | WorkoutPhotoController | GET /api/workoutphoto, POST /api/workoutphoto, GET /api/workoutphoto/{id}, DELETE /api/workoutphoto/{id} |
-| BodyWeightLogController | GET /api/bodyweightlog, POST /api/bodyweightlog, GET /api/bodyweightlog/{id}, DELETE /api/bodyweightlog/{id} |
+| BodyWeightLogController | GET /api/bodyweightlog, POST /api/bodyweightlog, GET /api/bodyweightlog/{id}, PUT /api/bodyweightlog/{id}, DELETE /api/bodyweightlog/{id} |
 | RestDayController | GET /api/restday, POST /api/restday, GET /api/restday/{id}, PUT /api/restday/{id}, DELETE /api/restday/{id} |
 
-**Note: WorkoutLog and RestDay have PUT endpoints; WorkoutPhoto and BodyWeightLog do not.** PUT accepts the same body as create and returns 404 for nonexistent or other users' ids. Per ADR-0002: POST and PUT on WorkoutLog return `WorkoutLogWriteResultDto` (wraps the workout DTO + `OverrodeRestDay` flag); POST and PUT on RestDay return 409 (displayable message) when the date holds one of the user's Workout Logs.
+**Note: WorkoutLog, RestDay, and BodyWeightLog have PUT endpoints; WorkoutPhoto does not.** PUT accepts the same body as create and returns 404 for nonexistent or other users' ids. BodyWeightLog PUT supersedes ADR-0004's original "no PUT" decision (#19) — it backs inline edit on `/bodyweight`; the entry-form dual-write rules are unchanged. Per ADR-0002: POST and PUT on WorkoutLog return `WorkoutLogWriteResultDto` (wraps the workout DTO + `OverrodeRestDay` flag); POST and PUT on RestDay return 409 (displayable message) when the date holds one of the user's Workout Logs.
 
 ### Backend Key Patterns
 - Controllers inject `AppDbContext` directly — no repository or service layer. (Exception: stateless invariant helpers in `Rules/`, e.g. `SameDayRules`, are allowed. They are **static** and take `AppDbContext` as a parameter — not DI-registered services or repositories. Per ADR-0002 they exist so the create and edit paths share one rule and can't drift. The caller still owns `SaveChangesAsync`.)
@@ -83,7 +83,7 @@ All resource controllers use `[Authorize]` and `[Route("api/[controller]")]`. JW
 - **Entry `Date` columns are Postgres `timestamptz`, which Npgsql only writes when `DateTime.Kind == Utc`.** Every write path (WorkoutLog/RestDay POST + PUT) stamps the incoming `dto.Date` with `DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc)` **before** any DB use (the same-day query fails on `Unspecified` too). Use `SpecifyKind`, **not** `ToUniversalTime()` — converting would shift the calendar day and reintroduce the off-by-one ADR-0003 guards against. The frontend sends a bare `YYYY-MM-DD` (ADR-0003), which binds to midnight-`Unspecified`; the range query already did this at `WorkoutLogController` GET `/range`.
 
 ### Known Backend Issues
-- No UPDATE (PUT) endpoint on WorkoutPhoto or BodyWeightLog
+- No UPDATE (PUT) endpoint on WorkoutPhoto
 
 ### Testing
 Two complementary suites:
@@ -117,18 +117,20 @@ IronDiary-Frontend/src/
 │   │   ├── services/
 │   │   │   ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
 │   │   │   ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
-│   │   │   ├── body-weight.service.ts ← getAll() (confirmed from dashboard usage)
+│   │   │   ├── body-weight.service.ts ← getAll, getById, create, update, delete
 │   │   │   └── rest-day.service.ts
 │   │   └── utils/
 │   │       ├── streak.util.ts          ← calculateStreak (+ spec)
 │   │       ├── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
-│   │       └── local-date.util.ts      ← toLocalDateString: YYYY-MM-DD from LOCAL calendar parts, never toISOString (ADR-0003) (+ spec)
+│   │       ├── local-date.util.ts      ← toLocalDateString: YYYY-MM-DD from LOCAL calendar parts, never toISOString (ADR-0003) (+ spec)
+│   │       └── bodyweight-series.util.ts ← dedupeByDay + filterByRange (chart range: month/year/all) (+ spec)
 │   ├── pages/
 │   │   ├── home/           ← public landing page (hero, features, how-it-works)
 │   │   ├── login/          ← login form
 │   │   ├── register/       ← register form
 │   │   ├── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
-│   │   └── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete); entry-form/ (EntryFormComponent — /log/new create form, Workout/Rest toggle)
+│   │   ├── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete); entry-form/ (EntryFormComponent — /log/new create form, Workout/Rest toggle + optional weigh-in per ADR-0004)
+│   │   └── bodyweight/     ← BodyweightComponent (lazy-loaded): all-time weight chart (Chart.js/ng2-charts), range toggle, add/list/inline-edit/delete weigh-ins
 │   └── shared/
 │       └── components/
 │           ├── navbar/
@@ -165,8 +167,9 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /log/new | EntryFormComponent (create: Workout/Rest toggle) | authGuard |
 | /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
 | /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
+| /bodyweight | BodyweightComponent (lazy-loaded chart + add/list/edit/delete) | authGuard |
 
-Routes still to build: `/bodyweight`, `/photos`, `/profile`.
+Routes still to build: `/photos`, `/profile`.
 
 ### Frontend Key Patterns
 - All components are standalone (no NgModules)
@@ -186,8 +189,8 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 ---
 
 ## Pages Status
-**Built:** home, login, register, dashboard, log
-**To build:** bodyweight tracker (with chart), progress photo grid, profile
+**Built:** home, login, register, dashboard, log, bodyweight
+**To build:** progress photo grid, profile
 **Future:** GitHub-style activity graph on dashboard
 
 ---
@@ -197,7 +200,6 @@ Routes still to build: `/bodyweight`, `/photos`, `/profile`.
 > **Rule:** Once an item below is fully implemented, remove it from this list.
 
 ### Pages to Build
-- [ ] `/bodyweight` — log and chart bodyweight over time (uses `BodyWeightService`)
 - [ ] `/photos` — progress photo grid (uses `WorkoutPhotoService`)
 - [ ] `/profile` — user profile page
 
