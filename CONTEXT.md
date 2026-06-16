@@ -24,6 +24,10 @@ _Avoid_: Feed, history, activity list, log (when referring to the page)
 A dated record marking a day with no workout, with an optional Note. Distinct from simply having no Workout Log on that date. A Rest Day cannot be added to a date that has a Workout Log; logging a workout on a rest date overrides (removes) the Rest Day. Duplicate Rest Days on one date are tolerated and have no extra effect.
 _Avoid_: Off day, break
 
+**Bodyweight Log**:
+A dated record of the user's bodyweight measurement (in pounds) on a given date. Reviewed as a trend over time on the `/bodyweight` page, and summarized as the latest value on the Dashboard. Explicitly **not** a Journal Entry — a Bodyweight Log never appears on the Timeline, and recording one does not affect the Streak.
+_Avoid_: Weight entry, weigh-in, bodyweight entry, measurement
+
 **Streak**:
 The number of consecutive days, counting back from today, on which the user logged at least one Workout Log **or** Rest Day. Broken by the first day with no log of either kind. Day-grained — multiple logs on the same day never increase it.
 _Avoid_: Consistency score, run
