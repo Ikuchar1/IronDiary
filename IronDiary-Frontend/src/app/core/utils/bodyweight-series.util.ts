@@ -1,0 +1,54 @@
+import { BodyWeightLogDto } from '../models/body-weight.model';
+
+/** Time window for the bodyweight chart. */
+export type ChartRange = 'month' | 'year' | 'all';
+
+/**
+ * Collapses Bodyweight Logs to one per calendar day for charting.
+ *
+ * When the user weighs in more than once on the same calendar day, only the
+ * most recently created log (highest `id`) is kept. The result is sorted
+ * oldest -> newest so a line chart reads left-to-right in time.
+ *
+ * The day key is the `YYYY-MM-DD` portion of the date string. Per ADR-0003 the
+ * backend stores the chosen day as midnight-UTC, so the date portion already IS
+ * the intended calendar day -- slicing it avoids the off-by-one that parsing a
+ * midnight-UTC value into a negative-offset local zone would reintroduce.
+ */
+export function dedupeByDay(logs: BodyWeightLogDto[]): BodyWeightLogDto[] {
+  const byDay = new Map<string, BodyWeightLogDto>();
+  for (const log of logs) {
+    const day = log.date.slice(0, 10);
+    const existing = byDay.get(day);
+    if (!existing || log.id > existing.id) {
+      byDay.set(day, log);
+    }
+  }
+  return [...byDay.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Narrows a series to a time window relative to `now`.
+ *
+ * `'all'` returns every log; `'month'` / `'year'` keep only logs dated on or
+ * after one month / one year before `now`. `now` is injected so the windowing
+ * is deterministic and testable.
+ */
+export function filterByRange(
+  logs: BodyWeightLogDto[],
+  range: ChartRange,
+  now: Date
+): BodyWeightLogDto[] {
+  if (range === 'all') {
+    return logs;
+  }
+
+  const cutoff = new Date(now);
+  if (range === 'month') {
+    cutoff.setMonth(cutoff.getMonth() - 1);
+  } else {
+    cutoff.setFullYear(cutoff.getFullYear() - 1);
+  }
+
+  return logs.filter(log => new Date(log.date) >= cutoff);
+}

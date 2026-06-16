@@ -10,6 +10,7 @@ import { toLocalDateString } from '../../../core/utils/local-date.util';
 
 const workoutUrl = `${environment.apiUrl}/workoutlog`;
 const restUrl = `${environment.apiUrl}/restday`;
+const bodyWeightUrl = `${environment.apiUrl}/bodyweightlog`;
 
 function setup() {
   const snackBar = { open: jasmine.createSpy('open') };
@@ -121,6 +122,115 @@ describe('EntryFormComponent', () => {
 
     expect(navSpy).toHaveBeenCalledWith(['/log']);
     // afterEach's httpMock.verify() asserts nothing was posted.
+  });
+
+  it('logs a bodyweight on the entry date after a workout saves, when weight is filled', () => {
+    const { fixture, httpMock } = setup();
+    spyOn(TestBed.inject(Router), 'navigate');
+    fixture.detectChanges();
+
+    fixture.componentInstance.type = 'Push';
+    fixture.componentInstance.weight = 180;
+    fixture.detectChanges();
+    saveBtn(fixture).click();
+
+    // Entry is written first; the date it used drives the weigh-in.
+    const entry = httpMock.expectOne(workoutUrl);
+    const date = entry.request.body.date;
+    entry.flush({ workout: { id: 7, type: 'Push', date }, overrodeRestDay: false });
+
+    // A second, independent POST writes the weigh-in on the same date (ADR-0004).
+    const weigh = httpMock.expectOne(bodyWeightUrl);
+    expect(weigh.request.method).toBe('POST');
+    expect(weigh.request.body).toEqual({ weight: 180, date });
+    weigh.flush({ id: 3, weight: 180, date });
+  });
+
+  it('does not log a bodyweight when the weight field is left empty', () => {
+    const { fixture, httpMock } = setup();
+    spyOn(TestBed.inject(Router), 'navigate');
+    fixture.detectChanges();
+
+    fixture.componentInstance.type = 'Push'; // weight left null
+    fixture.detectChanges();
+    saveBtn(fixture).click();
+
+    httpMock.expectOne(workoutUrl).flush({
+      workout: { id: 7, type: 'Push', date: toLocalDateString(new Date()) },
+      overrodeRestDay: false,
+    });
+
+    // afterEach's httpMock.verify() asserts no second POST to bodyweightlog fired.
+    httpMock.expectNone(bodyWeightUrl);
+  });
+
+  it('does not log a bodyweight when the weight is <= 0', () => {
+    const { fixture, httpMock } = setup();
+    spyOn(TestBed.inject(Router), 'navigate');
+    fixture.detectChanges();
+
+    fixture.componentInstance.type = 'Push';
+    fixture.componentInstance.weight = 0;
+    fixture.detectChanges();
+    saveBtn(fixture).click();
+
+    httpMock.expectOne(workoutUrl).flush({
+      workout: { id: 7, type: 'Push', date: toLocalDateString(new Date()) },
+      overrodeRestDay: false,
+    });
+
+    httpMock.expectNone(bodyWeightUrl);
+  });
+
+  it('keeps the entry and warns when the weigh-in POST fails', () => {
+    const { fixture, httpMock, snackBar } = setup();
+    const navSpy = spyOn(TestBed.inject(Router), 'navigate');
+    fixture.detectChanges();
+
+    fixture.componentInstance.type = 'Push';
+    fixture.componentInstance.weight = 180;
+    fixture.detectChanges();
+    saveBtn(fixture).click();
+
+    httpMock.expectOne(workoutUrl).flush({
+      workout: { id: 7, type: 'Push', date: toLocalDateString(new Date()) },
+      overrodeRestDay: false,
+    });
+
+    // The weigh-in write fails -- but the entry is already saved (no rollback).
+    httpMock
+      .expectOne(bodyWeightUrl)
+      .flush('boom', { status: 500, statusText: 'Server Error' });
+
+    expect(navSpy).toHaveBeenCalledWith(['/log']); // entry kept, user still leaves
+    expect(snackBar.open).toHaveBeenCalled();
+    expect(snackBar.open.calls.mostRecent().args[0] as string).toContain('weigh-in');
+  });
+
+  it('shows the optional weight field on the create form for both Workout and Rest', () => {
+    const { fixture } = setup();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+
+    // Workout (default): the weigh-in field is offered.
+    expect(el.querySelector('input[name="weight"]')).not.toBeNull();
+
+    (el.querySelector('.toggle-rest') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    // Rest Day: still offered (weight is orthogonal to Workout/Rest, ADR-0004).
+    expect(el.querySelector('input[name="weight"]')).not.toBeNull();
+  });
+
+  it('hides the weight field on the inline-edit path', () => {
+    const { fixture } = setup();
+    fixture.componentInstance.mode = 'edit';
+    fixture.detectChanges();
+
+    // Editing an existing entry: weight lives on /bodyweight, not here (ADR-0004).
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('input[name="weight"]')
+    ).toBeNull();
   });
 
   it('caps the date at today for a Workout and leaves it unrestricted for a Rest Day', () => {

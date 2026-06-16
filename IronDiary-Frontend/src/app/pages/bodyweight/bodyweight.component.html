@@ -1,0 +1,131 @@
+<section class="bodyweight-page">
+  <h1>Bodyweight</h1>
+
+  <form class="add-form" (ngSubmit)="addEntry()">
+    <mat-form-field appearance="outline">
+      <mat-label>Weight (lbs)</mat-label>
+      <input
+        matInput
+        type="number"
+        name="weight"
+        min="0"
+        step="0.1"
+        [(ngModel)]="newWeight"
+        autocomplete="off"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" name="date" [(ngModel)]="newDate" [max]="today" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" class="add-btn" type="submit" [disabled]="!canAdd">
+      Add
+    </button>
+  </form>
+
+  <mat-button-toggle-group
+    class="range-toggle"
+    [value]="range"
+    (change)="setRange($event.value)"
+    aria-label="Chart time window"
+  >
+    <mat-button-toggle value="month">Past month</mat-button-toggle>
+    <mat-button-toggle value="year">Past year</mat-button-toggle>
+    <mat-button-toggle value="all">All time</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (isLoading) {
+    <p class="state-msg">Loading…</p>
+  } @else if (hasData) {
+    <div class="chart-wrap">
+      <canvas
+        baseChart
+        type="line"
+        [data]="lineChartData"
+        [options]="lineChartOptions"
+      ></canvas>
+    </div>
+  } @else {
+    <p class="state-msg empty">No bodyweight logged yet.</p>
+  }
+
+  @if (entries.length) {
+    <ul class="entry-list">
+      @for (entry of entries; track entry.id) {
+        <li class="entry-row">
+          @if (editingId === entry.id) {
+            <div class="entry-edit">
+              <mat-form-field appearance="outline">
+                <mat-label>Weight (lbs)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  name="editWeight"
+                  min="0"
+                  step="0.1"
+                  [(ngModel)]="editWeight"
+                  autocomplete="off"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="editPicker"
+                  name="editDate"
+                  [(ngModel)]="editDate"
+                  [max]="today"
+                />
+                <mat-datepicker-toggle matIconSuffix [for]="editPicker"></mat-datepicker-toggle>
+                <mat-datepicker #editPicker></mat-datepicker>
+              </mat-form-field>
+
+              <button
+                mat-flat-button
+                color="primary"
+                class="save-edit-btn"
+                type="button"
+                [disabled]="!canSaveEdit"
+                (click)="saveEdit()"
+              >
+                Save
+              </button>
+              <button mat-button class="cancel-edit-btn" type="button" (click)="cancelEdit()">
+                Cancel
+              </button>
+            </div>
+          } @else {
+            <span class="entry-weight">{{ entry.weight }} lbs</span>
+            <span class="entry-date">{{ entry.date | date: 'mediumDate' : 'UTC' }}</span>
+            <button
+              mat-icon-button
+              class="row-menu-btn"
+              type="button"
+              [matMenuTriggerFor]="rowMenu"
+              aria-label="Weigh-in actions"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #rowMenu="matMenu">
+              <button mat-menu-item type="button" (click)="startEdit(entry)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item type="button" class="delete-btn" (click)="deleteEntry(entry.id)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="state-msg empty list-empty">No weigh-ins yet.</p>
+  }
+</section>

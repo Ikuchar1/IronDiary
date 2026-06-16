@@ -10,6 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkoutLogService } from '../../../core/services/workout-log.service';
 import { RestDayService } from '../../../core/services/rest-day.service';
+import { BodyWeightService } from '../../../core/services/body-weight.service';
 import { toLocalDateString } from '../../../core/utils/local-date.util';
 
 @Component({
@@ -36,6 +37,8 @@ export class EntryFormComponent {
   @Input() description = '';
   @Input() note = '';
   @Input() date = new Date();
+  /** Optional weigh-in logged alongside a new entry (create path only, ADR-0004). */
+  weight: number | null = null;
   errorMessage = '';
   maxWorkoutDate = new Date();
 
@@ -47,7 +50,8 @@ export class EntryFormComponent {
     private router: Router,
     private snackBar: MatSnackBar,
     private workoutLogService: WorkoutLogService,
-    private restDayService: RestDayService
+    private restDayService: RestDayService,
+    private bodyWeightService: BodyWeightService
   ) {}
 
   get canSave(): boolean {
@@ -75,12 +79,30 @@ export class EntryFormComponent {
   }
 
   /** Success leaves the form: create navigates to /log; edit emits `saved`. */
-  private onSaved() {
+  private onSaved(date: string) {
     if (this.mode === 'edit') {
       this.saved.emit();
-    } else {
-      this.router.navigate(['/log']);
+      return;
     }
+    this.logOptionalWeight(date);
+    this.router.navigate(['/log']);
+  }
+
+  // ADR-0004 dual-write: once the Journal Entry is saved, write an independent
+  // Bodyweight Log on the same date. A failed weigh-in never undoes the entry --
+  // the entry is kept and the user is told to re-add the weight on /bodyweight.
+  private logOptionalWeight(date: string) {
+    if (this.weight == null || this.weight <= 0) {
+      return;
+    }
+    this.bodyWeightService.create({ weight: this.weight, date }).subscribe({
+      error: () =>
+        this.snackBar.open(
+          `Saved your entry, but the weigh-in didn't save. Add it on the Bodyweight page.`,
+          'Dismiss',
+          { duration: 6000 }
+        ),
+    });
   }
 
   save() {
@@ -99,7 +121,7 @@ export class EntryFormComponent {
           if (result.overrodeRestDay) {
             this.snackBar.open(`Replaced your rest day on ${date}.`, 'Dismiss', { duration: 4000 });
           }
-          this.onSaved();
+          this.onSaved(date);
         },
         error: () => {
           this.errorMessage = 'Could not save your workout.';
@@ -113,7 +135,7 @@ export class EntryFormComponent {
           : this.restDayService.create(dto);
 
       request$.subscribe({
-        next: () => this.onSaved(),
+        next: () => this.onSaved(date),
         error: err => {
           this.errorMessage =
             typeof err.error === 'string' ? err.error : 'Could not save your rest day.';
