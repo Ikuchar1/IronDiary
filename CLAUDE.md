@@ -129,7 +129,7 @@ IronDiary-Frontend/src/
 │   │   ├── login/          ← login form
 │   │   ├── register/       ← register form
 │   │   ├── dashboard/      ← streak counter, most recent workout, latest bodyweight, recent activity list (5 logs), quick log button
-│   │   ├── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id, read-only + delete); entry-form/ (EntryFormComponent — /log/new create form, Workout/Rest toggle + optional weigh-in per ADR-0004)
+│   │   ├── log/            ← Timeline list (LogComponent); entry-detail/ (EntryDetailComponent serves /log/workout/:id & /log/rest/:id — read-only view + Delete, and hosts EntryFormComponent inline in edit mode via an `isEditing` toggle); entry-form/ (EntryFormComponent — dual-mode `create | edit`: `/log/new` create form (Workout/Rest toggle + optional weigh-in per ADR-0004), and edit mode PUTs an existing entry and emits `saved`/`cancelled` to its host)
 │   │   └── bodyweight/     ← BodyweightComponent (lazy-loaded): all-time weight chart (Chart.js/ng2-charts), range toggle, add/list/inline-edit/delete weigh-ins
 │   └── shared/
 │       └── components/
@@ -164,9 +164,9 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
 | /log | LogComponent (Timeline list) | authGuard |
-| /log/new | EntryFormComponent (create: Workout/Rest toggle) | authGuard |
-| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`) | authGuard |
-| /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`) | authGuard |
+| /log/new | EntryFormComponent (create mode: Workout/Rest toggle) | authGuard |
+| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
+| /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
 | /bodyweight | BodyweightComponent (lazy-loaded chart + add/list/edit/delete) | authGuard |
 
 Routes still to build: `/photos`, `/profile`.
@@ -274,3 +274,13 @@ ng generate component pages/<name>     # generate new page component
 5. Related DTOs live in the same `.cs` file (e.g., `WorkoutLogDto`, `CreateWorkoutLogDto`, `WorkoutLogDetailDto` are all in `WorkoutLogDto.cs`)
 6. Do not manually edit files in `Migrations/`
 7. New Angular components default to standalone — do not add NgModule declarations
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
