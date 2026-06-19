@@ -72,7 +72,7 @@ describe('EntryDetailComponent', () => {
     expect(text).toContain('Jun'); // date rendered via date pipe
   });
 
-  it('renders a Photos placeholder and never the photos array', () => {
+  it('renders the workout photos as a thumbnail grid, one img per photo', () => {
     const { fixture, httpMock } = setup('workout', '3');
     fixture.detectChanges();
 
@@ -80,16 +80,38 @@ describe('EntryDetailComponent', () => {
       id: 3,
       type: 'Push',
       date: '2026-06-11',
-      photos: [{ id: 1, url: 'https://example.com/broken.jpg', workoutLogId: 3 }],
+      photos: [
+        { id: 1, url: 'https://res.cloudinary.com/demo/a.jpg', workoutLogId: 3 },
+        { id: 2, url: 'https://res.cloudinary.com/demo/b.jpg', workoutLogId: 3 },
+      ],
     };
     httpMock.expectOne(`${workoutUrl}/3`).flush(workout);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.photos-placeholder')).toBeTruthy();
-    // The dummy/broken seed URL must never be rendered (no <img>, not in markup).
+    const imgs = el.querySelectorAll('.photo-grid img');
+    expect(imgs.length).toBe(2);
+    expect((imgs[0] as HTMLImageElement).src).toContain('a.jpg');
+    expect((imgs[1] as HTMLImageElement).src).toContain('b.jpg');
+  });
+
+  it('shows the empty state and no grid when the workout has no photos', () => {
+    const { fixture, httpMock } = setup('workout', '3');
+    fixture.detectChanges();
+
+    const workout: WorkoutLogDetailDto = {
+      id: 3,
+      type: 'Push',
+      date: '2026-06-11',
+      photos: [],
+    };
+    httpMock.expectOne(`${workoutUrl}/3`).flush(workout);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.photos-empty')).toBeTruthy();
+    expect(el.querySelector('.photo-grid')).toBeNull();
     expect(el.querySelector('img')).toBeNull();
-    expect(el.innerHTML).not.toContain('broken.jpg');
   });
 
   it('renders a rest day detail with Note and date, and no photo section', () => {
@@ -104,7 +126,8 @@ describe('EntryDetailComponent', () => {
     const text = el.textContent ?? '';
     expect(text).toContain('travel day');
     expect(text).toContain('Jun');
-    expect(el.querySelector('.photos-placeholder')).toBeNull();
+    expect(el.querySelector('.photo-grid')).toBeNull();
+    expect(el.querySelector('.photos-empty')).toBeNull();
   });
 
   it('deletes and routes to /log when the confirm dialog is confirmed', () => {

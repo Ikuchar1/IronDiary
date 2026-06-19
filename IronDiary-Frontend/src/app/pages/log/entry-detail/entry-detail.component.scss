@@ -72,7 +72,22 @@
   font-size: 1rem;
 }
 
-.photos-placeholder {
+.photo-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid $border;
+  }
+}
+
+.photos-empty {
   margin-top: 1rem;
   padding: 2rem 1rem;
   border: 1px dashed $border;

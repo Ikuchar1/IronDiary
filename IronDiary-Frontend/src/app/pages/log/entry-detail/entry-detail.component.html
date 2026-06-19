@@ -20,11 +20,13 @@
     <span class="entry-date">{{ w.date | date: 'EEEE, MMM d, y' : 'UTC' }}</span>
     <p class="entry-description" *ngIf="w.description">{{ w.description }}</p>
 
-    <!-- Photos placeholder: the photos array is deliberately ignored for now
-         (real grid + upload arrive with the /photos page + Cloudinary). -->
-    <div class="photos-placeholder">
+    <div class="photo-grid" *ngIf="w.photos.length">
+      <img *ngFor="let photo of w.photos" [src]="photo.url" alt="Workout photo" />
+    </div>
+
+    <div class="photos-empty" *ngIf="!w.photos.length">
       <span>Photos</span>
-      <p>Your progress photos will live here.</p>
+      <p>No photos on this workout yet.</p>
     </div>
   </ng-container>
 
