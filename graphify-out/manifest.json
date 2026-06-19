@@ -1,675 +1,660 @@
 {
-  "/Users/ikuchar/Desktop/projects/IronDiary/.claude/settings.json": {
-    "mtime": 1781828630.7615645,
-    "ast_hash": "e1073342e958ac9f00716938c8f165e3",
-    "semantic_hash": "e1073342e958ac9f00716938c8f165e3"
+  ".claude/settings.local.json": {
+    "mtime": 1781831393.1235118,
+    "ast_hash": "8f1c187a63a958db4fde8dc2c72ed6ec",
+    "semantic_hash": ""
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.claude/settings.local.json": {
-    "mtime": 1781829173.4477248,
-    "ast_hash": "22d876570f80ff2c29e712cbb3ee19c1",
-    "semantic_hash": "22d876570f80ff2c29e712cbb3ee19c1"
-  },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.vscode/settings.json": {
+  ".vscode/settings.json": {
     "mtime": 1774449762.9808912,
     "ast_hash": "feea9d5b2046a4df2e272f7914fbf2f1",
     "semantic_hash": "feea9d5b2046a4df2e272f7914fbf2f1"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.vscode/tasks.json": {
+  ".vscode/tasks.json": {
     "mtime": 1774534122.3658516,
     "ast_hash": "a8d40c29c838c7d6c461787a0061b1a9",
     "semantic_hash": "a8d40c29c838c7d6c461787a0061b1a9"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/.claude/settings.local.json": {
+  "IronDiary-Frontend/.claude/settings.local.json": {
     "mtime": 1781143147.5808818,
     "ast_hash": "6370d233766494225d74b9bfaa994233",
     "semantic_hash": "6370d233766494225d74b9bfaa994233"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/.vscode/extensions.json": {
+  "IronDiary-Frontend/.vscode/extensions.json": {
     "mtime": 1773600794.7922819,
     "ast_hash": "d3b118b41884c371c18cbd55e392eb07",
     "semantic_hash": "d3b118b41884c371c18cbd55e392eb07"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/.vscode/launch.json": {
+  "IronDiary-Frontend/.vscode/launch.json": {
     "mtime": 1773600794.79246,
     "ast_hash": "c6799d2f7ae6f5d7a740d1023654bb8d",
     "semantic_hash": "c6799d2f7ae6f5d7a740d1023654bb8d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/.vscode/tasks.json": {
+  "IronDiary-Frontend/.vscode/tasks.json": {
     "mtime": 1773600794.7925496,
     "ast_hash": "5a70b3d3763f6628c8083d7b033b98b8",
     "semantic_hash": "5a70b3d3763f6628c8083d7b033b98b8"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/angular.json": {
+  "IronDiary-Frontend/angular.json": {
     "mtime": 1774925608.8532944,
     "ast_hash": "26ba9272eac363d01942e35d32205a2b",
     "semantic_hash": "26ba9272eac363d01942e35d32205a2b"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/package.json": {
-    "mtime": 1781574739.1806774,
+  "IronDiary-Frontend/package.json": {
+    "mtime": 1781830867.5682073,
     "ast_hash": "ed6a4fbd73c0a043fc360955432e4a37",
     "semantic_hash": "ed6a4fbd73c0a043fc360955432e4a37"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/app.component.spec.ts": {
+  "IronDiary-Frontend/src/app/app.component.spec.ts": {
     "mtime": 1780363909.398927,
     "ast_hash": "6dc158fff2eeae070c40bbfd9e9d3990",
     "semantic_hash": "6dc158fff2eeae070c40bbfd9e9d3990"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/app.component.ts": {
+  "IronDiary-Frontend/src/app/app.component.ts": {
     "mtime": 1774033629.1850069,
     "ast_hash": "2d19e1e5e8a4ce593da9c2ff0880cbf9",
     "semantic_hash": "2d19e1e5e8a4ce593da9c2ff0880cbf9"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/app.config.ts": {
+  "IronDiary-Frontend/src/app/app.config.ts": {
     "mtime": 1780363351.7608924,
     "ast_hash": "193d9ee37c2d74a8f4a1b60e02fe055b",
     "semantic_hash": "193d9ee37c2d74a8f4a1b60e02fe055b"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/app.routes.ts": {
-    "mtime": 1781574963.025623,
+  "IronDiary-Frontend/src/app/app.routes.ts": {
+    "mtime": 1781830867.5685346,
     "ast_hash": "8709189077dfe1b6795417ade8121c1a",
     "semantic_hash": "8709189077dfe1b6795417ade8121c1a"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/guards/auth.guard.ts": {
+  "IronDiary-Frontend/src/app/core/guards/auth.guard.ts": {
     "mtime": 1773802398.2316506,
     "ast_hash": "3bee3b845ebe84f3ebccac216bf95acc",
     "semantic_hash": "3bee3b845ebe84f3ebccac216bf95acc"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/interceptors/auth.interceptor.ts": {
+  "IronDiary-Frontend/src/app/core/interceptors/auth.interceptor.ts": {
     "mtime": 1773802862.889242,
     "ast_hash": "60d39acb13edcc3fff4861f80e2a951e",
     "semantic_hash": "60d39acb13edcc3fff4861f80e2a951e"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/models/body-weight.model.ts": {
+  "IronDiary-Frontend/src/app/core/models/body-weight.model.ts": {
     "mtime": 1774926564.6293108,
     "ast_hash": "aa70cfa2e674587040f9835346bc3cfc",
     "semantic_hash": "aa70cfa2e674587040f9835346bc3cfc"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/models/journal-entry.model.ts": {
+  "IronDiary-Frontend/src/app/core/models/journal-entry.model.ts": {
     "mtime": 1781460942.202895,
     "ast_hash": "46096fd0323fbcc9ee19062f756836a0",
     "semantic_hash": "46096fd0323fbcc9ee19062f756836a0"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/models/rest-day.model.ts": {
+  "IronDiary-Frontend/src/app/core/models/rest-day.model.ts": {
     "mtime": 1774926443.5234191,
     "ast_hash": "5ae2454e1d5418e495dad085a7a6d74c",
     "semantic_hash": "5ae2454e1d5418e495dad085a7a6d74c"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/models/workout-log.model.ts": {
+  "IronDiary-Frontend/src/app/core/models/workout-log.model.ts": {
     "mtime": 1781394719.9352398,
     "ast_hash": "e2d1476da221f9de23760c443e362779",
     "semantic_hash": "e2d1476da221f9de23760c443e362779"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/auth.service.ts": {
+  "IronDiary-Frontend/src/app/core/services/auth.service.ts": {
     "mtime": 1774926194.192612,
     "ast_hash": "a4763ad2cedaa50186b18302fdf1729a",
     "semantic_hash": "a4763ad2cedaa50186b18302fdf1729a"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/body-weight.service.spec.ts": {
-    "mtime": 1781577622.8960462,
+  "IronDiary-Frontend/src/app/core/services/body-weight.service.spec.ts": {
+    "mtime": 1781830867.568944,
     "ast_hash": "5db8a8d4411f99165009bbaaa7fe4189",
     "semantic_hash": "5db8a8d4411f99165009bbaaa7fe4189"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/body-weight.service.ts": {
-    "mtime": 1781577630.845132,
+  "IronDiary-Frontend/src/app/core/services/body-weight.service.ts": {
+    "mtime": 1781830867.569294,
     "ast_hash": "25627c490fe18062fc5e215499064126",
     "semantic_hash": "25627c490fe18062fc5e215499064126"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/rest-day.service.spec.ts": {
+  "IronDiary-Frontend/src/app/core/services/rest-day.service.spec.ts": {
     "mtime": 1781394719.935559,
     "ast_hash": "4c67043183e6d74d1aa3d888b8776896",
     "semantic_hash": "4c67043183e6d74d1aa3d888b8776896"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/rest-day.service.ts": {
+  "IronDiary-Frontend/src/app/core/services/rest-day.service.ts": {
     "mtime": 1781394719.9360538,
     "ast_hash": "98b63fca0efd4a16305dd09a6747c0d1",
     "semantic_hash": "98b63fca0efd4a16305dd09a6747c0d1"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/workout-log.service.spec.ts": {
+  "IronDiary-Frontend/src/app/core/services/workout-log.service.spec.ts": {
     "mtime": 1781394719.936688,
     "ast_hash": "22af9d70dc45ef2c92be799265d6c311",
     "semantic_hash": "22af9d70dc45ef2c92be799265d6c311"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/services/workout-log.service.ts": {
+  "IronDiary-Frontend/src/app/core/services/workout-log.service.ts": {
     "mtime": 1781394719.937043,
     "ast_hash": "4fac65e98243bff756597d266b792d18",
     "semantic_hash": "4fac65e98243bff756597d266b792d18"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/bodyweight-series.util.spec.ts": {
-    "mtime": 1781575646.2874486,
+  "IronDiary-Frontend/src/app/core/utils/bodyweight-series.util.spec.ts": {
+    "mtime": 1781830867.5696154,
     "ast_hash": "0d26475af16d54b11014d35b284b3897",
     "semantic_hash": "0d26475af16d54b11014d35b284b3897"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/bodyweight-series.util.ts": {
-    "mtime": 1781575630.8631723,
+  "IronDiary-Frontend/src/app/core/utils/bodyweight-series.util.ts": {
+    "mtime": 1781830867.5699396,
     "ast_hash": "dd187dd8d4a297471c1d9377a7a82ed2",
     "semantic_hash": "dd187dd8d4a297471c1d9377a7a82ed2"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/journal-entry.util.spec.ts": {
+  "IronDiary-Frontend/src/app/core/utils/journal-entry.util.spec.ts": {
     "mtime": 1781460942.2030737,
     "ast_hash": "bc5595dc80970706a89498e5fdeaf522",
     "semantic_hash": "bc5595dc80970706a89498e5fdeaf522"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/journal-entry.util.ts": {
+  "IronDiary-Frontend/src/app/core/utils/journal-entry.util.ts": {
     "mtime": 1781460942.2032366,
     "ast_hash": "4072a87caa23fae10cc90e2e0dc2d756",
     "semantic_hash": "4072a87caa23fae10cc90e2e0dc2d756"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/local-date.util.spec.ts": {
+  "IronDiary-Frontend/src/app/core/utils/local-date.util.spec.ts": {
     "mtime": 1781460942.2034035,
     "ast_hash": "264c6d7e821ec9856de8342dd91553b7",
     "semantic_hash": "264c6d7e821ec9856de8342dd91553b7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/local-date.util.ts": {
+  "IronDiary-Frontend/src/app/core/utils/local-date.util.ts": {
     "mtime": 1781460942.2035496,
     "ast_hash": "ba24a05ffb6bf89e7576ea81de6fb6e7",
     "semantic_hash": "ba24a05ffb6bf89e7576ea81de6fb6e7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/streak.util.spec.ts": {
+  "IronDiary-Frontend/src/app/core/utils/streak.util.spec.ts": {
     "mtime": 1781143415.2192576,
     "ast_hash": "553e489d6f02bfd040ab463042b15e94",
     "semantic_hash": "553e489d6f02bfd040ab463042b15e94"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/core/utils/streak.util.ts": {
+  "IronDiary-Frontend/src/app/core/utils/streak.util.ts": {
     "mtime": 1781143429.2897842,
     "ast_hash": "32bd910c8b8dce5de705ee30243995ae",
     "semantic_hash": "32bd910c8b8dce5de705ee30243995ae"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.spec.ts": {
-    "mtime": 1781644579.310911,
+  "IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.spec.ts": {
+    "mtime": 1781830867.5708053,
     "ast_hash": "0e12092a0a4771cd2e8b0f88a7a911a5",
     "semantic_hash": "0e12092a0a4771cd2e8b0f88a7a911a5"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.ts": {
-    "mtime": 1781644655.5189865,
+  "IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.ts": {
+    "mtime": 1781830867.571175,
     "ast_hash": "f8794f1d405483055055855063742905",
     "semantic_hash": "f8794f1d405483055055855063742905"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.spec.ts": {
+  "IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.spec.ts": {
     "mtime": 1780363892.626512,
     "ast_hash": "5982bd426b3fce3129a05aaa3bd3d1d6",
     "semantic_hash": "5982bd426b3fce3129a05aaa3bd3d1d6"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.ts": {
+  "IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.ts": {
     "mtime": 1781460942.2041404,
     "ast_hash": "7268fe1efe3deaf748b3f1eb05e4d638",
     "semantic_hash": "7268fe1efe3deaf748b3f1eb05e4d638"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/home/home.component.spec.ts": {
+  "IronDiary-Frontend/src/app/pages/home/home.component.spec.ts": {
     "mtime": 1774030417.0384197,
     "ast_hash": "7277e3815f0f32e071f5d77c68607eb8",
     "semantic_hash": "7277e3815f0f32e071f5d77c68607eb8"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/home/home.component.ts": {
+  "IronDiary-Frontend/src/app/pages/home/home.component.ts": {
     "mtime": 1774405717.321035,
     "ast_hash": "8924633b80af78e0ac21595921d92fce",
     "semantic_hash": "8924633b80af78e0ac21595921d92fce"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.spec.ts": {
-    "mtime": 1781460942.2047412,
-    "ast_hash": "c95ee922a753426a6d5c0dc97bc0f418",
-    "semantic_hash": "c95ee922a753426a6d5c0dc97bc0f418"
+  "IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.spec.ts": {
+    "mtime": 1781831343.6984277,
+    "ast_hash": "00a6e15952a79224afed14426f9680bc",
+    "semantic_hash": ""
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.ts": {
+  "IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.ts": {
     "mtime": 1781460942.2048903,
     "ast_hash": "da23a4f326e3736142b771c19d2c7bd7",
     "semantic_hash": "da23a4f326e3736142b771c19d2c7bd7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.spec.ts": {
-    "mtime": 1781643405.2625685,
+  "IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.spec.ts": {
+    "mtime": 1781830867.5718808,
     "ast_hash": "dbf98907691de7ffe5b04465456a6e7d",
     "semantic_hash": "dbf98907691de7ffe5b04465456a6e7d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.ts": {
-    "mtime": 1781578283.6842506,
+  "IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.ts": {
+    "mtime": 1781830867.5723753,
     "ast_hash": "819db26e5f73c99ef18bed211f447261",
     "semantic_hash": "819db26e5f73c99ef18bed211f447261"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/log.component.spec.ts": {
+  "IronDiary-Frontend/src/app/pages/log/log.component.spec.ts": {
     "mtime": 1781460942.2062879,
     "ast_hash": "6bb134e1255c58de887d9283bcd59714",
     "semantic_hash": "6bb134e1255c58de887d9283bcd59714"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/log.component.ts": {
+  "IronDiary-Frontend/src/app/pages/log/log.component.ts": {
     "mtime": 1781460942.2064555,
     "ast_hash": "e33943618d03f097839070700bbeda1e",
     "semantic_hash": "e33943618d03f097839070700bbeda1e"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/login/login.component.spec.ts": {
+  "IronDiary-Frontend/src/app/pages/login/login.component.spec.ts": {
     "mtime": 1780363889.4696057,
     "ast_hash": "18158635ea510fd4d971f06c4b4fc064",
     "semantic_hash": "18158635ea510fd4d971f06c4b4fc064"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/login/login.component.ts": {
+  "IronDiary-Frontend/src/app/pages/login/login.component.ts": {
     "mtime": 1774407929.5465055,
     "ast_hash": "91da663f02d1e0c59d06ab2683fea14b",
     "semantic_hash": "91da663f02d1e0c59d06ab2683fea14b"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/register/register.component.spec.ts": {
+  "IronDiary-Frontend/src/app/pages/register/register.component.spec.ts": {
     "mtime": 1780363887.981051,
     "ast_hash": "3668804c895f7ef5778b1972d7f2847e",
     "semantic_hash": "3668804c895f7ef5778b1972d7f2847e"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/register/register.component.ts": {
+  "IronDiary-Frontend/src/app/pages/register/register.component.ts": {
     "mtime": 1774407937.9040802,
     "ast_hash": "e78267ec76e914bf51990e69938d31f6",
     "semantic_hash": "e78267ec76e914bf51990e69938d31f6"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.spec.ts": {
+  "IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.spec.ts": {
     "mtime": 1781460942.206968,
     "ast_hash": "b24ff846347a8530c7ea96ee5959b6ed",
     "semantic_hash": "b24ff846347a8530c7ea96ee5959b6ed"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts": {
+  "IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts": {
     "mtime": 1781460942.207118,
     "ast_hash": "12853d85a87c777c153fcba41c92ddc5",
     "semantic_hash": "12853d85a87c777c153fcba41c92ddc5"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/footer/footer.component.spec.ts": {
+  "IronDiary-Frontend/src/app/shared/components/footer/footer.component.spec.ts": {
     "mtime": 1774033538.740523,
     "ast_hash": "11752425e1271764f53ab03b875edee5",
     "semantic_hash": "11752425e1271764f53ab03b875edee5"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/footer/footer.component.ts": {
+  "IronDiary-Frontend/src/app/shared/components/footer/footer.component.ts": {
     "mtime": 1774035994.0187182,
     "ast_hash": "a97114471c78b08ce06989f367c2707d",
     "semantic_hash": "a97114471c78b08ce06989f367c2707d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.spec.ts": {
+  "IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.spec.ts": {
     "mtime": 1780363891.457683,
     "ast_hash": "0cd7ef4e871d1cc05e5c119f149c6390",
     "semantic_hash": "0cd7ef4e871d1cc05e5c119f149c6390"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.ts": {
+  "IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.ts": {
     "mtime": 1774036656.8464806,
     "ast_hash": "46afeb983d9dc614767d1ca1fa819516",
     "semantic_hash": "46afeb983d9dc614767d1ca1fa819516"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/environments/environment.development.ts": {
+  "IronDiary-Frontend/src/environments/environment.development.ts": {
     "mtime": 1774925689.4528909,
     "ast_hash": "bf691ab85265ff3ac8e67d7999138149",
     "semantic_hash": "bf691ab85265ff3ac8e67d7999138149"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/environments/environment.ts": {
+  "IronDiary-Frontend/src/environments/environment.ts": {
     "mtime": 1774925674.5120397,
     "ast_hash": "2a320d6ddc79f38da1eafa28638c8adf",
     "semantic_hash": "2a320d6ddc79f38da1eafa28638c8adf"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/main.ts": {
+  "IronDiary-Frontend/src/main.ts": {
     "mtime": 1773600794.7926834,
     "ast_hash": "c986c915181c0d91d6ea1af9fc003131",
     "semantic_hash": "c986c915181c0d91d6ea1af9fc003131"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/tsconfig.app.json": {
+  "IronDiary-Frontend/tsconfig.app.json": {
     "mtime": 1773600794.7897427,
     "ast_hash": "5e4359f76ba3214222e943bbef1a2e03",
     "semantic_hash": "5e4359f76ba3214222e943bbef1a2e03"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/tsconfig.json": {
+  "IronDiary-Frontend/tsconfig.json": {
     "mtime": 1781461689.5444572,
     "ast_hash": "95e26b2cb7a9df2aafdbc5b6d979b983",
     "semantic_hash": "95e26b2cb7a9df2aafdbc5b6d979b983"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/tsconfig.spec.json": {
+  "IronDiary-Frontend/tsconfig.spec.json": {
     "mtime": 1773600794.791957,
     "ast_hash": "3bbab7796b2ab5af73dcc4b5f9064535",
     "semantic_hash": "3bbab7796b2ab5af73dcc4b5f9064535"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api.Tests/BodyWeightLogTests.cs": {
-    "mtime": 1781577581.5073543,
+  "IronDiary.Api.Tests/BodyWeightLogTests.cs": {
+    "mtime": 1781830867.5727835,
     "ast_hash": "4c947f255f61e64e617e5d8cc098b9cc",
     "semantic_hash": "4c947f255f61e64e617e5d8cc098b9cc"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api.Tests/IronDiary.Api.Tests.csproj": {
+  "IronDiary.Api.Tests/IronDiary.Api.Tests.csproj": {
     "mtime": 1781394719.9373438,
     "ast_hash": "b7b44dcd351a36d1fc3dac83c0611ceb",
     "semantic_hash": "b7b44dcd351a36d1fc3dac83c0611ceb"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api.Tests/IronDiaryApiFactory.cs": {
+  "IronDiary.Api.Tests/IronDiaryApiFactory.cs": {
     "mtime": 1781394719.9377673,
     "ast_hash": "56dc2ebf49c55e3b744a679154c3eb97",
     "semantic_hash": "56dc2ebf49c55e3b744a679154c3eb97"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api.Tests/RestDayTests.cs": {
+  "IronDiary.Api.Tests/RestDayTests.cs": {
     "mtime": 1781394719.9383388,
     "ast_hash": "20ecd24a7a3ba54e8927176c82307181",
     "semantic_hash": "20ecd24a7a3ba54e8927176c82307181"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api.Tests/WorkoutLogTests.cs": {
+  "IronDiary.Api.Tests/WorkoutLogTests.cs": {
     "mtime": 1781394719.9386847,
     "ast_hash": "9b20fe528262f161f7f9e0a108cc9cd7",
     "semantic_hash": "9b20fe528262f161f7f9e0a108cc9cd7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Controllers/AuthController.cs": {
+  "IronDiary.Api/Controllers/AuthController.cs": {
     "mtime": 1773778060.156472,
     "ast_hash": "03972b60dc00248751ae796b75728c30",
     "semantic_hash": "03972b60dc00248751ae796b75728c30"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Controllers/BodyWeightLogController.cs": {
-    "mtime": 1781577598.4838243,
+  "IronDiary.Api/Controllers/BodyWeightLogController.cs": {
+    "mtime": 1781830867.5730238,
     "ast_hash": "d8fd8599926c1cff873b2f2d1beaff9d",
     "semantic_hash": "d8fd8599926c1cff873b2f2d1beaff9d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Controllers/RestDayController.cs": {
+  "IronDiary.Api/Controllers/RestDayController.cs": {
     "mtime": 1781460942.2078395,
     "ast_hash": "6c1d96a765089d7855c27f2a7f77d5fa",
     "semantic_hash": "6c1d96a765089d7855c27f2a7f77d5fa"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Controllers/WorkoutLogController.cs": {
+  "IronDiary.Api/Controllers/WorkoutLogController.cs": {
     "mtime": 1781460942.208128,
     "ast_hash": "1ee96970274a189390237bf98cfb3fdf",
     "semantic_hash": "1ee96970274a189390237bf98cfb3fdf"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Controllers/WorkoutPhotoController.cs": {
+  "IronDiary.Api/Controllers/WorkoutPhotoController.cs": {
     "mtime": 1781394719.940824,
     "ast_hash": "c25cbd6107b3739aafc5d05e6e554407",
     "semantic_hash": "c25cbd6107b3739aafc5d05e6e554407"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/BodyWeightLogDto.cs": {
+  "IronDiary.Api/DTOs/BodyWeightLogDto.cs": {
     "mtime": 1774535299.3440676,
     "ast_hash": "d1f5844579895231d0080b3031a3f7c9",
     "semantic_hash": "d1f5844579895231d0080b3031a3f7c9"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/LoginDto.cs": {
+  "IronDiary.Api/DTOs/LoginDto.cs": {
     "mtime": 1773777043.3331459,
     "ast_hash": "eaeef7ea2986285cb4b730ae3ffbb2d9",
     "semantic_hash": "eaeef7ea2986285cb4b730ae3ffbb2d9"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/RegisterDto.cs": {
+  "IronDiary.Api/DTOs/RegisterDto.cs": {
     "mtime": 1773776790.4288766,
     "ast_hash": "59c3d81592db9a6b290236c1c137931f",
     "semantic_hash": "59c3d81592db9a6b290236c1c137931f"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/RestDayDto.cs": {
+  "IronDiary.Api/DTOs/RestDayDto.cs": {
     "mtime": 1774535317.8227155,
     "ast_hash": "8ab8c5996ccf49780fa7e3ec7807f725",
     "semantic_hash": "8ab8c5996ccf49780fa7e3ec7807f725"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/WorkoutLogDto.cs": {
+  "IronDiary.Api/DTOs/WorkoutLogDto.cs": {
     "mtime": 1781394719.9413056,
     "ast_hash": "bfd9f1935a0125fbc80115dc4308837d",
     "semantic_hash": "bfd9f1935a0125fbc80115dc4308837d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/DTOs/WorkoutPhotoDto.cs": {
+  "IronDiary.Api/DTOs/WorkoutPhotoDto.cs": {
     "mtime": 1774668846.8706892,
     "ast_hash": "f21193efd10dd22deeb4f4db6c1d9d51",
     "semantic_hash": "f21193efd10dd22deeb4f4db6c1d9d51"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Data/AppDbContext.cs": {
+  "IronDiary.Api/Data/AppDbContext.cs": {
     "mtime": 1773775517.7356682,
     "ast_hash": "a5255b4e570538a78562b029a9b63c93",
     "semantic_hash": "a5255b4e570538a78562b029a9b63c93"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/IronDiary.Api.csproj": {
+  "IronDiary.Api/IronDiary.Api.csproj": {
     "mtime": 1773775101.870796,
     "ast_hash": "10e448237309009703685a6e19645e4b",
     "semantic_hash": "10e448237309009703685a6e19645e4b"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260315214813_InitialCreation.Designer.cs": {
+  "IronDiary.Api/Migrations/20260315214813_InitialCreation.Designer.cs": {
     "mtime": 1773611293.0888395,
     "ast_hash": "05a59aa48c20b72bd1ea144b3b0f5413",
     "semantic_hash": "05a59aa48c20b72bd1ea144b3b0f5413"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260315214813_InitialCreation.cs": {
+  "IronDiary.Api/Migrations/20260315214813_InitialCreation.cs": {
     "mtime": 1773611293.0887375,
     "ast_hash": "57bfb68ab9b4941ad2ba9cb23d1f2a29",
     "semantic_hash": "57bfb68ab9b4941ad2ba9cb23d1f2a29"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260315220836_AddInitialModels.Designer.cs": {
+  "IronDiary.Api/Migrations/20260315220836_AddInitialModels.Designer.cs": {
     "mtime": 1773612516.9442837,
     "ast_hash": "544b5a8bfa3779b629a801ac86cc9e4b",
     "semantic_hash": "544b5a8bfa3779b629a801ac86cc9e4b"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260315220836_AddInitialModels.cs": {
+  "IronDiary.Api/Migrations/20260315220836_AddInitialModels.cs": {
     "mtime": 1773612516.9441185,
     "ast_hash": "43605dce5a2c10a8d2685b1998ee9634",
     "semantic_hash": "43605dce5a2c10a8d2685b1998ee9634"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317173842_AddWokroutPhotoObjectNavigation.Designer.cs": {
+  "IronDiary.Api/Migrations/20260317173842_AddWokroutPhotoObjectNavigation.Designer.cs": {
     "mtime": 1773769122.7487073,
     "ast_hash": "64fa34322641d8c6d9eeee1d595edb60",
     "semantic_hash": "64fa34322641d8c6d9eeee1d595edb60"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317173842_AddWokroutPhotoObjectNavigation.cs": {
+  "IronDiary.Api/Migrations/20260317173842_AddWokroutPhotoObjectNavigation.cs": {
     "mtime": 1773769122.748481,
     "ast_hash": "9713db533821daa71692ee30600f6422",
     "semantic_hash": "9713db533821daa71692ee30600f6422"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317193821_AddIdentity.Designer.cs": {
+  "IronDiary.Api/Migrations/20260317193821_AddIdentity.Designer.cs": {
     "mtime": 1773776301.467085,
     "ast_hash": "af0cdca3d805a79e623640ade3c20404",
     "semantic_hash": "af0cdca3d805a79e623640ade3c20404"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317193821_AddIdentity.cs": {
+  "IronDiary.Api/Migrations/20260317193821_AddIdentity.cs": {
     "mtime": 1773776301.466885,
     "ast_hash": "29e9f212243e4740160e4c602f1d2845",
     "semantic_hash": "29e9f212243e4740160e4c602f1d2845"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317201852_AddUserIdToModels.Designer.cs": {
+  "IronDiary.Api/Migrations/20260317201852_AddUserIdToModels.Designer.cs": {
     "mtime": 1773778733.0110514,
     "ast_hash": "3b079ac17fe2bd95e90ee38f3edc6972",
     "semantic_hash": "3b079ac17fe2bd95e90ee38f3edc6972"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/20260317201852_AddUserIdToModels.cs": {
+  "IronDiary.Api/Migrations/20260317201852_AddUserIdToModels.cs": {
     "mtime": 1773778733.0108798,
     "ast_hash": "ad643297cecb5e41b69dac857246b0a4",
     "semantic_hash": "ad643297cecb5e41b69dac857246b0a4"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Migrations/AppDbContextModelSnapshot.cs": {
+  "IronDiary.Api/Migrations/AppDbContextModelSnapshot.cs": {
     "mtime": 1773778733.0119429,
     "ast_hash": "4754f53b861a4d4ffa601cdd7848c1c8",
     "semantic_hash": "4754f53b861a4d4ffa601cdd7848c1c8"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Models/AppUser.cs": {
+  "IronDiary.Api/Models/AppUser.cs": {
     "mtime": 1773775442.095562,
     "ast_hash": "8755b656d60f5f8b24563312d3286bc2",
     "semantic_hash": "8755b656d60f5f8b24563312d3286bc2"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Models/BodyWeightLog.cs": {
+  "IronDiary.Api/Models/BodyWeightLog.cs": {
     "mtime": 1773778490.9235258,
     "ast_hash": "e33526ec974efe66a0ef86a9c96c6ac0",
     "semantic_hash": "e33526ec974efe66a0ef86a9c96c6ac0"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Models/RestDay.cs": {
+  "IronDiary.Api/Models/RestDay.cs": {
     "mtime": 1773778454.6516428,
     "ast_hash": "863361221f245f91af9928c7d962bf25",
     "semantic_hash": "863361221f245f91af9928c7d962bf25"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Models/WorkoutLog.cs": {
+  "IronDiary.Api/Models/WorkoutLog.cs": {
     "mtime": 1773778708.5184932,
     "ast_hash": "bdeb9b1b563de7432fd1377cd513afde",
     "semantic_hash": "bdeb9b1b563de7432fd1377cd513afde"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Models/WorkoutPhoto.cs": {
+  "IronDiary.Api/Models/WorkoutPhoto.cs": {
     "mtime": 1773778438.730663,
     "ast_hash": "4ebd32fec54e5c607a73c7fcd4aa6922",
     "semantic_hash": "4ebd32fec54e5c607a73c7fcd4aa6922"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Program.cs": {
+  "IronDiary.Api/Program.cs": {
     "mtime": 1781394719.942007,
     "ast_hash": "7720debddd48996b67b01cda10514c96",
     "semantic_hash": "7720debddd48996b67b01cda10514c96"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Properties/launchSettings.json": {
+  "IronDiary.Api/Properties/launchSettings.json": {
     "mtime": 1773600314.0875592,
     "ast_hash": "589b07907e693f641cf83c588f83bde7",
     "semantic_hash": "589b07907e693f641cf83c588f83bde7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/Rules/SameDayRules.cs": {
+  "IronDiary.Api/Rules/SameDayRules.cs": {
     "mtime": 1781394719.9423964,
     "ast_hash": "3b4a6c425c3fb70fe2061b0e0b3171e9",
     "semantic_hash": "3b4a6c425c3fb70fe2061b0e0b3171e9"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.Api/appsettings.json": {
+  "IronDiary.Api/appsettings.json": {
     "mtime": 1773610573.529961,
     "ast_hash": "ac189aa277cc4218dfd9669677417e23",
     "semantic_hash": "ac189aa277cc4218dfd9669677417e23"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary.sln": {
+  "IronDiary.sln": {
     "mtime": 1781394719.942771,
     "ast_hash": "2b9f419a45029ef0fe662df6888c96e1",
     "semantic_hash": "2b9f419a45029ef0fe662df6888c96e1"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/postman-collection.json": {
+  "postman-collection.json": {
     "mtime": 1781394719.9432764,
     "ast_hash": "4ca4e2c2367fa1f4381ac757ab54b0aa",
     "semantic_hash": "4ca4e2c2367fa1f4381ac757ab54b0aa"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/postman-environment.json": {
+  "postman-environment.json": {
     "mtime": 1781394719.9436834,
     "ast_hash": "a01c83d7c83349f3d92f6fc4495c1bbb",
     "semantic_hash": "a01c83d7c83349f3d92f6fc4495c1bbb"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.kiro/steering/product.md": {
+  ".kiro/steering/product.md": {
     "mtime": 1774474361.6395662,
     "ast_hash": "4a0341b85e64d9c5d4946e7981e449b3",
     "semantic_hash": "4a0341b85e64d9c5d4946e7981e449b3"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.kiro/steering/structure.md": {
+  ".kiro/steering/structure.md": {
     "mtime": 1774669118.6992664,
     "ast_hash": "13e3aefebdb72313ae117bb493aac477",
     "semantic_hash": "13e3aefebdb72313ae117bb493aac477"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/.kiro/steering/tech.md": {
+  ".kiro/steering/tech.md": {
     "mtime": 1774474372.6710422,
     "ast_hash": "d909abab8e89c6dc6dfc3f074ff7361d",
     "semantic_hash": "d909abab8e89c6dc6dfc3f074ff7361d"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/CLAUDE.md": {
-    "mtime": 1781828630.7612596,
+  "CLAUDE.md": {
+    "mtime": 1781830867.564296,
     "ast_hash": "0c1f0a922dc093b3a484260dcd7f746c",
     "semantic_hash": "0c1f0a922dc093b3a484260dcd7f746c"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/CONTEXT.md": {
-    "mtime": 1781653159.6167855,
-    "ast_hash": "0c2082f68b552992991b015ab0d8cce6",
-    "semantic_hash": "0c2082f68b552992991b015ab0d8cce6"
+  "CONTEXT.md": {
+    "mtime": 1781831246.1113918,
+    "ast_hash": "951ac3e99bc8778f26d62a76dac56fbf",
+    "semantic_hash": ""
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/README.md": {
+  "IronDiary-Frontend/README.md": {
     "mtime": 1773600794.787862,
     "ast_hash": "6e8512b1de9a36b8432e59f4d8ada784",
     "semantic_hash": "6e8512b1de9a36b8432e59f4d8ada784"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/app.component.html": {
+  "IronDiary-Frontend/src/app/app.component.html": {
     "mtime": 1774033621.137733,
     "ast_hash": "8e618536b0308620f227a59fdb1d26d6",
     "semantic_hash": "8e618536b0308620f227a59fdb1d26d6"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.html": {
-    "mtime": 1781577718.0513613,
+  "IronDiary-Frontend/src/app/pages/bodyweight/bodyweight.component.html": {
+    "mtime": 1781830867.5703409,
     "ast_hash": "e27dced172df2fea0a86f11f138044a8",
     "semantic_hash": "e27dced172df2fea0a86f11f138044a8"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.html": {
+  "IronDiary-Frontend/src/app/pages/dashboard/dashboard.component.html": {
     "mtime": 1781460942.2037694,
     "ast_hash": "63ad807356b89d1f578be12d97c1ae74",
     "semantic_hash": "63ad807356b89d1f578be12d97c1ae74"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/home/home.component.html": {
+  "IronDiary-Frontend/src/app/pages/home/home.component.html": {
     "mtime": 1774406522.2511966,
     "ast_hash": "44280041025b66660e714c5d0ae5f774",
     "semantic_hash": "44280041025b66660e714c5d0ae5f774"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.html": {
-    "mtime": 1781460942.2043977,
-    "ast_hash": "023c97f284b34713bc1aafd849e9cc6b",
-    "semantic_hash": "023c97f284b34713bc1aafd849e9cc6b"
+  "IronDiary-Frontend/src/app/pages/log/entry-detail/entry-detail.component.html": {
+    "mtime": 1781831328.7965887,
+    "ast_hash": "af3aa3979e1ccf152170973127a6078f",
+    "semantic_hash": ""
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.html": {
-    "mtime": 1781643649.4808424,
+  "IronDiary-Frontend/src/app/pages/log/entry-form/entry-form.component.html": {
+    "mtime": 1781830867.5715003,
     "ast_hash": "1de8ae6325a10975940563783acc060a",
     "semantic_hash": "1de8ae6325a10975940563783acc060a"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/log/log.component.html": {
+  "IronDiary-Frontend/src/app/pages/log/log.component.html": {
     "mtime": 1781460942.205832,
     "ast_hash": "352cb1f38181f4e46cc57ec7b626576f",
     "semantic_hash": "352cb1f38181f4e46cc57ec7b626576f"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/login/login.component.html": {
+  "IronDiary-Frontend/src/app/pages/login/login.component.html": {
     "mtime": 1774407915.1129587,
     "ast_hash": "d538c2e25de7e603e848ba47d93a2bf3",
     "semantic_hash": "d538c2e25de7e603e848ba47d93a2bf3"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/pages/register/register.component.html": {
+  "IronDiary-Frontend/src/app/pages/register/register.component.html": {
     "mtime": 1774407630.930854,
     "ast_hash": "3da80ab10ef123c0ea9fa6a429d9b7f7",
     "semantic_hash": "3da80ab10ef123c0ea9fa6a429d9b7f7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.html": {
+  "IronDiary-Frontend/src/app/shared/components/confirm-dialog/confirm-dialog.component.html": {
     "mtime": 1781460942.2066858,
     "ast_hash": "8771389e2617ddc11140e2aaf724ce0a",
     "semantic_hash": "8771389e2617ddc11140e2aaf724ce0a"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/footer/footer.component.html": {
+  "IronDiary-Frontend/src/app/shared/components/footer/footer.component.html": {
     "mtime": 1774033810.4907768,
     "ast_hash": "d3b882b4553f6782e0a94503bd32c385",
     "semantic_hash": "d3b882b4553f6782e0a94503bd32c385"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.html": {
-    "mtime": 1781574919.968477,
+  "IronDiary-Frontend/src/app/shared/components/navbar/navbar.component.html": {
+    "mtime": 1781830867.5726073,
     "ast_hash": "facb22c3da7aeef9ddb25a2c08bb2d11",
     "semantic_hash": "facb22c3da7aeef9ddb25a2c08bb2d11"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/index.html": {
+  "IronDiary-Frontend/src/index.html": {
     "mtime": 1774926861.5004537,
     "ast_hash": "38b8f3fe2afc8ac733b072a868ff4695",
     "semantic_hash": "38b8f3fe2afc8ac733b072a868ff4695"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/README.md": {
+  "README.md": {
     "mtime": 1773599978.6334405,
     "ast_hash": "b0cb3e614f1780e17e8c9faa61005e53",
     "semantic_hash": "b0cb3e614f1780e17e8c9faa61005e53"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0001-streak-counts-rest-days.md": {
+  "docs/adr/0001-streak-counts-rest-days.md": {
     "mtime": 1781141612.514035,
     "ast_hash": "cf1123c4211b01b1bab74348bcb3c5a8",
     "semantic_hash": "cf1123c4211b01b1bab74348bcb3c5a8"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0002-workout-overrides-rest-day.md": {
+  "docs/adr/0002-workout-overrides-rest-day.md": {
     "mtime": 1781227750.8089075,
     "ast_hash": "a3da2a02fcc518daa55a9316c5e38704",
     "semantic_hash": "a3da2a02fcc518daa55a9316c5e38704"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0003-local-date-formatting-on-the-frontend.md": {
+  "docs/adr/0003-local-date-formatting-on-the-frontend.md": {
     "mtime": 1781460942.2083008,
     "ast_hash": "aa84b6f0bd20de11a336fbe1c4ae25c7",
     "semantic_hash": "aa84b6f0bd20de11a336fbe1c4ae25c7"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0004-bodyweight-log-piggybacks-on-the-entry-form.md": {
-    "mtime": 1781644385.8776484,
+  "docs/adr/0004-bodyweight-log-piggybacks-on-the-entry-form.md": {
+    "mtime": 1781830867.5733328,
     "ast_hash": "b29f4f55ee4b630bc8456ba4775ed8fc",
     "semantic_hash": "b29f4f55ee4b630bc8456ba4775ed8fc"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0005-workout-photos-are-an-independent-resource.md": {
-    "mtime": 1781654014.6699386,
-    "ast_hash": "2b3ff6b1a1ec1cded5fd25153eca990e",
-    "semantic_hash": "2b3ff6b1a1ec1cded5fd25153eca990e"
-  },
-  "/Users/ikuchar/Desktop/projects/IronDiary/docs/adr/0006-cloudinary-signed-uploads-via-a-generic-endpoint.md": {
-    "mtime": 1781654025.1394763,
-    "ast_hash": "8ae8353780c7799e027e3cb9b4edff26",
-    "semantic_hash": "8ae8353780c7799e027e3cb9b4edff26"
-  },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/assets/favicon-16x16.png": {
+  "IronDiary-Frontend/src/assets/favicon-16x16.png": {
     "mtime": 1774054714.0,
     "ast_hash": "41d64a44737a96aa86309502fe5b4652",
     "semantic_hash": "41d64a44737a96aa86309502fe5b4652"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/assets/favicon-32x32.png": {
+  "IronDiary-Frontend/src/assets/favicon-32x32.png": {
     "mtime": 1774054714.0,
     "ast_hash": "d28486759c4f7589c85f6342b5a13a4e",
     "semantic_hash": "d28486759c4f7589c85f6342b5a13a4e"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/assets/logo.png": {
+  "IronDiary-Frontend/src/assets/logo.png": {
     "mtime": 1774037816.405044,
     "ast_hash": "08b99fa02203326a8ded349cf336a85f",
     "semantic_hash": "08b99fa02203326a8ded349cf336a85f"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/assets/logo2.png": {
+  "IronDiary-Frontend/src/assets/logo2.png": {
     "mtime": 1774035171.1208963,
     "ast_hash": "54424834a336ff6aa387fde23e4f5479",
     "semantic_hash": "54424834a336ff6aa387fde23e4f5479"
   },
-  "/Users/ikuchar/Desktop/projects/IronDiary/IronDiary-Frontend/src/assets/logo3.png": {
+  "IronDiary-Frontend/src/assets/logo3.png": {
     "mtime": 1774036214.3586907,
     "ast_hash": "8180e82908cc398d06aa99b252f82cad",
     "semantic_hash": "8180e82908cc398d06aa99b252f82cad"

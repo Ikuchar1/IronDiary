@@ -1,13 +1,18 @@
-# Graph Report - .  (2026-06-18)
+# Graph Report - IronDiary  (2026-06-18)
 
 ## Corpus Check
-- 135 files · ~258,020 words
+- 114 files · ~257,240 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 599 nodes · 890 edges · 51 communities (33 shown, 18 thin omitted)
+- 674 nodes · 958 edges · 56 communities (39 shown, 17 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.83)
-- Token cost: 155,369 input · 0 output
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `512dd5f1`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Entry Detail Page (vieweditdelete)|Entry Detail Page (view/edit/delete)]]
@@ -61,6 +66,11 @@
 - [[_COMMUNITY_Footer Template|Footer Template]]
 - [[_COMMUNITY_Root README|Root README]]
 - [[_COMMUNITY_Index HTML Host Page|Index HTML Host Page]]
+- [[_COMMUNITY_Community 51|Community 51]]
+- [[_COMMUNITY_Community 52|Community 52]]
+- [[_COMMUNITY_Community 53|Community 53]]
+- [[_COMMUNITY_Community 54|Community 54]]
+- [[_COMMUNITY_Community 55|Community 55]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `AuthService` - 17 edges
@@ -69,10 +79,10 @@
 4. `BodyweightComponent` - 16 edges
 5. `WorkoutLogTests` - 15 edges
 6. `BodyWeightService` - 14 edges
-7. `EntryDetailComponent` - 13 edges
-8. `EntryFormComponent` - 13 edges
-9. `RestDayTests` - 13 edges
-10. `environment` - 12 edges
+7. `IronDiary — Project Context - Last Updated June 12th 2026` - 14 edges
+8. `EntryDetailComponent` - 13 edges
+9. `EntryFormComponent` - 13 edges
+10. `RestDayTests` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Per-user Data Isolation` --rationale_for--> `Workout Log (domain term)`  [INFERRED]
@@ -97,19 +107,19 @@
 - **Day-grained date semantics across streak, override, and local formatting** — adr_0001_streak_rest_days, adr_0002_workout_overrides_rest_day, adr_0003_local_date_formatting [EXTRACTED 0.85]
 - **Related-resource-written-separately boundary (bodyweight, photos, upload signing)** — adr_0004_bodyweight_piggybacks_entry_form, adr_0005_workout_photos_independent_resource, adr_0006_cloudinary_signed_uploads [EXTRACTED 0.85]
 
-## Communities (51 total, 18 thin omitted)
+## Communities (56 total, 17 thin omitted)
 
 ### Community 0 - "Entry Detail Page (view/edit/delete)"
-Cohesion: 0.08
-Nodes (14): EntryDetailComponent, environment, LogComponent, JournalEntry, CreateRestDayDto, RestDayDto, CreateWorkoutLogDto, WorkoutLogDetailDto (+6 more)
+Cohesion: 0.07
+Nodes (15): EntryDetailComponent, EntryFormComponent, environment, LogComponent, JournalEntry, CreateRestDayDto, RestDayDto, CreateWorkoutLogDto (+7 more)
 
 ### Community 1 - "Bodyweight Page & Chart"
-Cohesion: 0.07
-Nodes (18): BodyweightComponent, Bodyweight Log (domain term), Gym Sessions during streak (domain term), Journal Entry (domain term), Photo (domain term), Rest Day (domain term), Streak (domain term), Timeline (domain term) (+10 more)
+Cohesion: 0.06
+Nodes (15): BodyweightComponent, ConfirmDialogComponent, ConfirmDialogData, Bodyweight Log (domain term), DashboardComponent, BodyWeightLogDto, CreateBodyWeightLogDto, BodyWeightService (+7 more)
 
 ### Community 2 - "App Shell, Routing & Auth Guard"
-Cohesion: 0.06
-Nodes (16): AppComponent, appConfig, routes, app-footer, app-navbar, FooterComponent, authGuard(), HomeComponent (+8 more)
+Cohesion: 0.08
+Nodes (12): AppComponent, appConfig, routes, app-footer, app-navbar, FooterComponent, authGuard(), authInterceptor() (+4 more)
 
 ### Community 3 - "Frontend npm Dependencies"
 Cohesion: 0.05
@@ -164,20 +174,28 @@ Cohesion: 0.15
 Nodes (12): prefix, projectType, root, schematics, sourceRoot, newProjectRoot, projects, IronDiary-Frontend (+4 more)
 
 ### Community 16 - "Frontend README & Conventions"
-Cohesion: 0.24
-Nodes (10): IronDiary Frontend README, AppDbContext, Backend Conventions, DTO Layer, Frontend Conventions, Project Structure, Angular 19 Frontend, .NET 9 / ASP.NET Core Backend (+2 more)
+Cohesion: 0.09
+Nodes (22): IronDiary Frontend README, AppDbContext, Backend, Backend Conventions, Backend — IronDiary.Api/, Conventions, DTO Layer, Frontend (+14 more)
+
+### Community 17 - "Entry Form Component"
+Cohesion: 0.07
+Nodes (29): Architecture Rules (enforce these), Assets, Backend — IronDiary.Api, Backend Key Patterns, Backlog / Next Steps, Chores / Refactors, Controller Endpoints, Dev Commands (+21 more)
 
 ### Community 18 - "Same-Day Rules Helper"
 Cohesion: 0.36
 Nodes (5): AppDbContext, DateTime, Task, SameDayRules, string
 
 ### Community 19 - "Streak & Date ADRs (0001-0003)"
-Cohesion: 0.29
-Nodes (7): Gym Sessions sub-stat (raw non-deduped Workout Log count), ADR-0001: Streak counts Rest Days, day-grained, with Gym-Sessions sub-stat, Shared same-day invariant helper (create/edit paths), ADR-0002: A Workout Log overrides a Rest Day on the same date, ADR-0003: Frontend formats entry dates from local calendar parts, not toISOString(), toLocalDateString helper (core/utils), UTC date-pipe display convention ({{ date | date : 'UTC' }})
+Cohesion: 0.20
+Nodes (9): Gym Sessions sub-stat (raw non-deduped Workout Log count), ADR-0001: Streak counts Rest Days, day-grained, with Gym-Sessions sub-stat, Shared same-day invariant helper (create/edit paths), A Workout Log overrides a Rest Day on the same date, Consequences, Considered Options, ADR-0003: Frontend formats entry dates from local calendar parts, not toISOString(), toLocalDateString helper (core/utils) (+1 more)
+
+### Community 20 - "Confirm Dialog Component"
+Cohesion: 0.14
+Nodes (12): Gym Sessions during streak (domain term), Journal Entry (domain term), Photo (domain term), Rest Day (domain term), Streak (domain term), Timeline (domain term), Type (domain term), Workout Log (domain term) (+4 more)
 
 ### Community 21 - "Streak Calculation Util"
-Cohesion: 0.33
-Nodes (3): calculateStreak(), TODAY, StreakResult
+Cohesion: 0.25
+Nodes (7): Additional Resources, Building, Code scaffolding, Development server, IronDiaryFrontend, Running end-to-end tests, Running unit tests
 
 ### Community 22 - "EF Model Snapshot"
 Cohesion: 0.33
@@ -231,25 +249,41 @@ Nodes (3): IronDiary Logo (logo2 — Dumbbell-Arrow Mark), IronDiary Brand Ident
 Cohesion: 1.00
 Nodes (3): Login component template, Navbar component template, Register component template
 
+### Community 51 - "Community 51"
+Cohesion: 0.50
+Nodes (3): Consequences, Considered Options, Streak counts Rest Days and is day-grained, with a separate Gym-Sessions sub-stat
+
+### Community 52 - "Community 52"
+Cohesion: 0.50
+Nodes (3): Consequences, Frontend formats entry dates from local calendar parts, not `toISOString()`, Reading dates back (display)
+
+### Community 53 - "Community 53"
+Cohesion: 0.50
+Nodes (3): A Bodyweight Log is created from the entry form, but is not a Journal Entry, Consequences, Considered Options
+
+### Community 54 - "Community 54"
+Cohesion: 0.50
+Nodes (3): Core Features, IronDiary - Product Overview, Users
+
 ## Knowledge Gaps
-- **188 isolated node(s):** `$schema`, `version`, `newProjectRoot`, `projectType`, `style` (+183 more)
+- **240 isolated node(s):** `$schema`, `version`, `newProjectRoot`, `projectType`, `style` (+235 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthService` connect `App Shell, Routing & Auth Guard` to `Entry Detail Page (view/edit/delete)`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Why does `WorkoutLogController` connect `WorkoutLog Controller` to `Auth & Photo Controllers`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `$schema`, `version`, `newProjectRoot` to the rest of the system?**
-  _189 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _241 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Entry Detail Page (view/edit/delete)` be split into smaller, more focused modules?**
-  _Cohesion score 0.08348457350272233 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06862745098039216 - nodes in this community are weakly interconnected._
 - **Should `Bodyweight Page & Chart` be split into smaller, more focused modules?**
-  _Cohesion score 0.07017543859649122 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.061016949152542375 - nodes in this community are weakly interconnected._
 - **Should `App Shell, Routing & Auth Guard` be split into smaller, more focused modules?**
-  _Cohesion score 0.05959183673469388 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08013937282229965 - nodes in this community are weakly interconnected._
 - **Should `Frontend npm Dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
+- **Should `Angular Build/Serve Config` be split into smaller, more focused modules?**
+  _Cohesion score 0.07386363636363637 - nodes in this community are weakly interconnected._
