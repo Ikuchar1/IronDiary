@@ -8,6 +8,10 @@ Personal fitness journal. Users record workout sessions, rest days, bodyweight, 
 A record of a single workout session on a given date — has one Type, an optional free-text Description, and zero or more progress Photos.
 _Avoid_: Workout, session record, entry
 
+**Photo**:
+A progress image belonging to one Workout Log — always tethered to a specific workout session, never standalone. A Photo cannot exist on its own date or on a Rest Day; it is only ever reached through its parent Workout Log. The `/photos` grid is a cross-workout view of these same Photos, not a separate kind of image.
+_Avoid_: Progress photo (as a distinct concept), physique photo, standalone photo
+
 **Type**:
 A single freeform label describing what a Workout Log was (e.g. "Push", "Pull", "Legs", "Yoga"). It is one label per workout, chosen freely by the user — never a constrained enum, and never a structured set of muscle groups.
 _Avoid_: Category, split, muscle group, body part, tag
