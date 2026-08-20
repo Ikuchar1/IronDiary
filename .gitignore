@@ -433,9 +433,3 @@ appsettings.Development.json
 !IronDiary-Frontend/src/app/pages/log/**
 
 .postman.json
-
-# graphify: regenerable, machine-local artifacts.
-# The cache rebuilds on `graphify update`; dated folders are local backups.
-# Tracked graph artifacts (graph.json, graph.html, GRAPH_REPORT.md, etc.) are NOT ignored.
-graphify-out/cache/
-graphify-out/20*/
