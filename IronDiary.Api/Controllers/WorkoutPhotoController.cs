@@ -10,10 +10,12 @@ public class WorkoutPhotoController : ControllerBase
 {
     
     private readonly AppDbContext _context;
+    private readonly IConfiguration _config;
 
-    public WorkoutPhotoController(AppDbContext context)
+    public WorkoutPhotoController(AppDbContext context, IConfiguration config)
     {
         _context = context;
+        _config = config;
     }
 
     [HttpGet]
@@ -31,6 +33,13 @@ public class WorkoutPhotoController : ControllerBase
     public async Task<IActionResult> CreatePhoto(CreateWorkoutPhotoDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        // Only accept delivery URLs from our configured Cloudinary cloud — the photo
+        // must have come through the signed upload flow (ADR-0006), not an arbitrary host.
+        var cloudName = _config["Cloudinary:CloudName"]!;
+        var expectedPrefix = $"https://res.cloudinary.com/{cloudName}/";
+        if (!dto.Url.StartsWith(expectedPrefix, StringComparison.Ordinal))
+            return BadRequest("Url must be a Cloudinary URL for the configured cloud.");
 
         var logExists = await _context.WorkoutLogs
             .AnyAsync(w => w.Id == dto.WorkoutLogId && w.UserId == userId);

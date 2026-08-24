@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,28 @@ namespace IronDiary.Api.Tests;
 /// </summary>
 public class IronDiaryApiFactory : WebApplicationFactory<Program>
 {
+    // Known fake Cloudinary credentials so signature tests can recompute the SHA1.
+    // These never reach real Cloudinary — the signing math runs locally in the controller.
+    public const string CloudinaryCloudName = "test-cloud";
+    public const string CloudinaryApiKey = "test-api-key";
+    public const string CloudinaryApiSecret = "test-api-secret";
+
+    // Throwaway signing key for tests only. HMAC-SHA256 needs >= 256 bits, so keep it 32+ chars.
+    private const string JwtKey = "test-only-jwt-signing-key-please-ignore-32+";
+
+    static IronDiaryApiFactory()
+    {
+        // Supplied as environment variables (`__` is the nesting separator), NOT via
+        // ConfigureAppConfiguration below: that only applies during builder.Build(), which is
+        // too late for Program.cs's startup guard and JWT setup — both read configuration
+        // beforehand. CreateBuilder() reads environment variables upfront, so these land in
+        // time for every read site. Keeps tests independent of the developer's user-secrets.
+        Environment.SetEnvironmentVariable("Jwt__Key", JwtKey);
+        Environment.SetEnvironmentVariable("Cloudinary__CloudName", CloudinaryCloudName);
+        Environment.SetEnvironmentVariable("Cloudinary__ApiKey", CloudinaryApiKey);
+        Environment.SetEnvironmentVariable("Cloudinary__ApiSecret", CloudinaryApiSecret);
+    }
+
     private readonly SqliteConnection _connection = new("DataSource=:memory:");
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

@@ -8,6 +8,18 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Fail fast on missing secrets. Without this the null-forgiving `!` at every read site
+// silences the compiler but not the runtime: an unset value becomes an empty string,
+// so the API boots fine and then signs uploads with an empty secret (opaque Cloudinary
+// rejection) or builds the prefix "https://res.cloudinary.com//" (400s every real URL).
+// Set these via `dotnet user-secrets` in development, environment variables in production.
+foreach (var key in new[] { "Jwt:Key", "Cloudinary:CloudName", "Cloudinary:ApiKey", "Cloudinary:ApiSecret" })
+{
+    if (string.IsNullOrWhiteSpace(builder.Configuration[key]))
+        throw new InvalidOperationException(
+            $"Missing required configuration '{key}'. Set it with: dotnet user-secrets set \"{key}\" \"<value>\" --project IronDiary.Api");
+}
+
 // Add services to the container.
 //allows it to deal with cycles in object graphs (Ex: WorkoutLog has a collection of WorkoutPhotos, and each WorkoutPhoto has a reference back to its WorkoutLog)
 builder.Services.AddControllers()

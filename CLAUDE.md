@@ -118,7 +118,8 @@ IronDiary-Frontend/src/
 │   │   │   ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
 │   │   │   ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
 │   │   │   ├── body-weight.service.ts ← getAll, getById, create, update, delete
-│   │   │   └── rest-day.service.ts
+│   │   │   ├── rest-day.service.ts
+│   │   │   └── workout-photo.service.ts ← delete (Photos are add/remove only — no PUT, per ADR-0005)
 │   │   └── utils/
 │   │       ├── streak.util.ts          ← calculateStreak (+ spec)
 │   │       ├── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
@@ -165,7 +166,7 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /dashboard | DashboardComponent | authGuard |
 | /log | LogComponent (Timeline list) | authGuard |
 | /log/new | EntryFormComponent (create mode: Workout/Rest toggle) | authGuard |
-| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
+| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode. The photo grid stays visible in edit mode and each thumbnail gains a remove action that DELETEs live per ADR-0005) | authGuard |
 | /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
 | /bodyweight | BodyweightComponent (lazy-loaded chart + add/list/edit/delete) | authGuard |
 
@@ -211,13 +212,14 @@ Routes still to build: `/photos`, `/profile`.
 - [ ] Convert all remaining `.css` files to `.scss` (older shared components still use `.css`). When done, remove the "do not rename" note under Frontend Key Patterns.
 - [ ] Write a nice `README.md` at the repo root — project overview, screenshots, tech stack, local setup/run instructions for both API and frontend.
 - [ ] `/home` shows "Get Started" (create account) and "Sign In" CTAs even when the user is already logged in. When authenticated, swap those for an authed CTA (e.g. "Go to Dashboard" / "Log Workout" — exact copy TBD). Gate on `authService.isLoggedIn()`.
+- [ ] **Per-environment config: local / dev / prod.** Do this when picking a host, not before. .NET already layers config (later wins): `appsettings.json` → `appsettings.{Environment}.json` → User Secrets (Development only) → environment variables → CLI args, with `ASPNETCORE_ENVIRONMENT` (`Development` / `Staging` / `Production`) selecting the middle file. Steps: add `appsettings.Production.json` for **non-secret** per-env values (issuer/audience, CORS origins, logging levels), keep secrets out of every committed file and inject them as env vars from the host's config UI or CI/CD pipeline, and set `ASPNETCORE_ENVIRONMENT` per deployment. **CORS is currently hardcoded to `http://localhost:4200` in `Program.cs`** — move it to config as part of this. Frontend is a separate mechanism: Angular swaps `environment.ts` for `environment.development.ts` at build time, and `environment.ts`'s `apiUrl` is still a placeholder. **Never put a secret in an Angular environment file — it ships to the browser.**
 - [ ] **Token expiry handling (frontend).** `authService.isLoggedIn()` only checks the JWT *exists*, not that it's still valid. An expired-but-present token passes `authGuard`, then every API call 401s (stranding the user instead of redirecting). Harden by checking the token's `exp` claim, and/or treat a 401 response as "clear token + redirect to /login". Not a breach — a correctness/UX bug.
 
 ### Security — before public deploy
 > Not urgent while the app is local-only; do these before hosting it anywhere public.
 - [ ] **HTTPS everywhere in production.** A JWT sent over plain HTTP can be sniffed. Local HTTP is fine; ensure the deployed API + frontend are served over TLS (most hosts provide it free) and the app never talks to an `http://` API in prod.
 - [ ] **Rate limiting on `/auth/login` and `/auth/register`.** Without it these are open to password brute-forcing and account-spam. Use .NET 9's built-in rate limiter (`builder.Services.AddRateLimiter(...)` + `app.UseRateLimiter()`), applied at least to the auth endpoints.
-- [ ] **Move the JWT signing key out of `appsettings.Development.json` into a real secret store** for any deploy: .NET User Secrets is dev-only (`~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`, set via `dotnet user-secrets set "Jwt:Key" "..."`); production should read it from environment variables. This key is the master key — a leak lets anyone forge tokens for any user.
+- [ ] **Supply secrets from environment variables in production.** Local dev is done — `Jwt:Key` and the `Cloudinary:*` values now come from .NET User Secrets (`dotnet user-secrets set "<Key>" "<value>" --project IronDiary.Api`), and `Program.cs` fails fast at boot if any is missing. User Secrets is **dev-only**; the deployed API must supply the same four keys as environment variables (`Jwt__Key`, `Cloudinary__CloudName`, `Cloudinary__ApiKey`, `Cloudinary__ApiSecret` — `__` is the nesting separator). The JWT key is the master key: a leak lets anyone forge tokens for any user.
 - [ ] **Cloudinary uploads** (when `/photos` ships): use signed uploads (server-generated signature, not an unsigned preset), validate that the URL saved via `POST /api/workoutphoto` is actually a Cloudinary URL, and set size/format limits in Cloudinary.
 
 ### Future / Nice to Have
