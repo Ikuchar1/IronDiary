@@ -11,17 +11,32 @@
   (cancelled)="isEditing = false"
 ></app-entry-form>
 
-<div class="detail" *ngIf="!isLoading && !isEditing">
+<!-- The Photo grid stays on screen in edit mode (ADR-0005: Photos are their own
+     resource and commit live), so this block renders for both states and only the
+     read-only entry fields are gated on !isEditing. -->
+<div class="detail" *ngIf="!isLoading && (!isEditing || kind === 'workout')">
 
-  <button mat-button class="back-btn" (click)="back()">← Back</button>
+  <button mat-button class="back-btn" *ngIf="!isEditing" (click)="back()">← Back</button>
 
   <ng-container *ngIf="kind === 'workout' && workout as w">
-    <span class="entry-badge badge-workout">{{ w.type }}</span>
-    <span class="entry-date">{{ w.date | date: 'EEEE, MMM d, y' : 'UTC' }}</span>
-    <p class="entry-description" *ngIf="w.description">{{ w.description }}</p>
+    <ng-container *ngIf="!isEditing">
+      <span class="entry-badge badge-workout">{{ w.type }}</span>
+      <span class="entry-date">{{ w.date | date: 'EEEE, MMM d, y' : 'UTC' }}</span>
+      <p class="entry-description" *ngIf="w.description">{{ w.description }}</p>
+    </ng-container>
 
     <div class="photo-grid" *ngIf="w.photos.length">
-      <img *ngFor="let photo of w.photos" [src]="photo.url" alt="Workout photo" />
+      <div class="photo-tile" *ngFor="let photo of w.photos">
+        <img [src]="photo.url" alt="Workout photo" />
+        <button
+          mat-mini-fab
+          type="button"
+          class="photo-remove-btn"
+          *ngIf="isEditing"
+          aria-label="Remove photo"
+          (click)="removePhoto(photo)"
+        >×</button>
+      </div>
     </div>
 
     <div class="photos-empty" *ngIf="!w.photos.length">
@@ -36,7 +51,7 @@
     <p class="entry-note" *ngIf="r.note">{{ r.note }}</p>
   </ng-container>
 
-  <div class="detail-actions">
+  <div class="detail-actions" *ngIf="!isEditing">
     <button mat-stroked-button class="edit-btn" (click)="edit()">Edit</button>
     <button mat-stroked-button class="delete-btn" (click)="delete()">Delete</button>
   </div>

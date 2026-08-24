@@ -15,6 +15,7 @@ import { RestDayDto } from '../../../core/models/rest-day.model';
 
 const workoutUrl = `${environment.apiUrl}/workoutlog`;
 const restUrl = `${environment.apiUrl}/restday`;
+const photoUrl = `${environment.apiUrl}/workoutphoto`;
 
 // Build the component with a stubbed route supplying kind + id, then resolve
 // the matching GET so the detail renders.
@@ -93,6 +94,102 @@ describe('EntryDetailComponent', () => {
     expect(imgs.length).toBe(2);
     expect((imgs[0] as HTMLImageElement).src).toContain('a.jpg');
     expect((imgs[1] as HTMLImageElement).src).toContain('b.jpg');
+  });
+
+  it('offers a remove action per thumbnail in edit mode, and none in read-only', async () => {
+    const { fixture, httpMock } = setup('workout', '3');
+    fixture.detectChanges();
+
+    const workout: WorkoutLogDetailDto = {
+      id: 3,
+      type: 'Push',
+      date: '2026-06-11',
+      photos: [
+        { id: 1, url: 'https://res.cloudinary.com/demo/a.jpg', workoutLogId: 3 },
+        { id: 2, url: 'https://res.cloudinary.com/demo/b.jpg', workoutLogId: 3 },
+      ],
+    };
+    httpMock.expectOne(`${workoutUrl}/3`).flush(workout);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    // Read-only: thumbnails, but nothing to remove them with.
+    expect(el.querySelectorAll('.photo-grid img').length).toBe(2);
+    expect(el.querySelectorAll('.photo-remove-btn').length).toBe(0);
+
+    el.querySelector<HTMLButtonElement>('.edit-btn')!.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    // Edit mode: the grid stays visible, now with one remove action per photo.
+    expect(el.querySelectorAll('.photo-grid img').length).toBe(2);
+    expect(el.querySelectorAll('.photo-remove-btn').length).toBe(2);
+  });
+
+  it('removes a photo live via DELETE when the confirm dialog is confirmed', async () => {
+    const { fixture, httpMock, dialog } = setup('workout', '3', true);
+    fixture.detectChanges();
+
+    const workout: WorkoutLogDetailDto = {
+      id: 3,
+      type: 'Push',
+      date: '2026-06-11',
+      photos: [
+        { id: 1, url: 'https://res.cloudinary.com/demo/a.jpg', workoutLogId: 3 },
+        { id: 2, url: 'https://res.cloudinary.com/demo/b.jpg', workoutLogId: 3 },
+      ],
+    };
+    httpMock.expectOne(`${workoutUrl}/3`).flush(workout);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    el.querySelector<HTMLButtonElement>('.edit-btn')!.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    el.querySelectorAll<HTMLButtonElement>('.photo-remove-btn')[0].click();
+
+    expect(dialog.open).toHaveBeenCalled();
+    const del = httpMock.expectOne(`${photoUrl}/1`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush(null);
+    fixture.detectChanges();
+
+    // Gone from the grid immediately — no workout re-fetch (afterEach verify()).
+    const imgs = el.querySelectorAll('.photo-grid img');
+    expect(imgs.length).toBe(1);
+    expect((imgs[0] as HTMLImageElement).src).toContain('b.jpg');
+  });
+
+  it('keeps the photo and issues no DELETE when the remove dialog is cancelled', async () => {
+    const { fixture, httpMock } = setup('workout', '3', false);
+    fixture.detectChanges();
+
+    const workout: WorkoutLogDetailDto = {
+      id: 3,
+      type: 'Push',
+      date: '2026-06-11',
+      photos: [
+        { id: 1, url: 'https://res.cloudinary.com/demo/a.jpg', workoutLogId: 3 },
+        { id: 2, url: 'https://res.cloudinary.com/demo/b.jpg', workoutLogId: 3 },
+      ],
+    };
+    httpMock.expectOne(`${workoutUrl}/3`).flush(workout);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    el.querySelector<HTMLButtonElement>('.edit-btn')!.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    el.querySelectorAll<HTMLButtonElement>('.photo-remove-btn')[0].click();
+    fixture.detectChanges();
+
+    httpMock.expectNone(`${photoUrl}/1`);
+    expect(el.querySelectorAll('.photo-grid img').length).toBe(2);
   });
 
   it('shows the empty state and no grid when the workout has no photos', () => {

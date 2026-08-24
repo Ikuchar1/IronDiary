@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkoutLogService } from '../../../core/services/workout-log.service';
 import { RestDayService } from '../../../core/services/rest-day.service';
-import { WorkoutLogDetailDto } from '../../../core/models/workout-log.model';
+import { WorkoutPhotoService } from '../../../core/services/workout-photo.service';
+import { WorkoutLogDetailDto, WorkoutPhotoDto } from '../../../core/models/workout-log.model';
 import { RestDayDto } from '../../../core/models/rest-day.model';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { EntryFormComponent } from '../entry-form/entry-form.component';
@@ -34,7 +35,8 @@ export class EntryDetailComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private workoutLogService: WorkoutLogService,
-    private restDayService: RestDayService
+    private restDayService: RestDayService,
+    private workoutPhotoService: WorkoutPhotoService
   ) {}
 
   ngOnInit() {
@@ -85,6 +87,33 @@ export class EntryDetailComponent implements OnInit {
   onSaved() {
     this.isEditing = false;
     this.load();
+  }
+
+  /**
+   * Photos are an independent resource (ADR-0005), so a removal commits
+   * immediately rather than waiting on the edit form's Save. On success the
+   * photo is dropped from the local array — no re-fetch, so the grid updates
+   * without a round-trip flicker.
+   */
+  removePhoto(photo: WorkoutPhotoDto) {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Remove photo?',
+        message: 'This permanently removes this photo from the workout.',
+        confirmText: 'Remove',
+      },
+    });
+
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+      this.workoutPhotoService.delete(photo.id).subscribe(() => {
+        if (this.workout) {
+          this.workout.photos = this.workout.photos.filter(p => p.id !== photo.id);
+        }
+      });
+    });
   }
 
   delete() {

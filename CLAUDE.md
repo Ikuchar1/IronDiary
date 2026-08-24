@@ -118,7 +118,8 @@ IronDiary-Frontend/src/
 │   │   │   ├── auth.service.ts        ← login, register, logout, saveToken, getToken, isLoggedIn
 │   │   │   ├── workout-log.service.ts ← getWorkoutLogs, createWorkoutLog, updateWorkoutLog, getWorkoutLogById, deleteWorkoutLog, getWorkoutLogsByDateRange
 │   │   │   ├── body-weight.service.ts ← getAll, getById, create, update, delete
-│   │   │   └── rest-day.service.ts
+│   │   │   ├── rest-day.service.ts
+│   │   │   └── workout-photo.service.ts ← delete (Photos are add/remove only — no PUT, per ADR-0005)
 │   │   └── utils/
 │   │       ├── streak.util.ts          ← calculateStreak (+ spec)
 │   │       ├── journal-entry.util.ts   ← mergeJournalEntries: merge + newest-first sort of workouts/rest days into JournalEntry[] (+ spec)
@@ -165,7 +166,7 @@ $text-muted: rgba(255, 255, 255, 0.5);
 | /dashboard | DashboardComponent | authGuard |
 | /log | LogComponent (Timeline list) | authGuard |
 | /log/new | EntryFormComponent (create mode: Workout/Rest toggle) | authGuard |
-| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
+| /log/workout/:id | EntryDetailComponent (`data: { kind: 'workout' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode. The photo grid stays visible in edit mode and each thumbnail gains a remove action that DELETEs live per ADR-0005) | authGuard |
 | /log/rest/:id | EntryDetailComponent (`data: { kind: 'rest' }`; read-only view + Edit/Delete; Edit toggles EntryFormComponent inline in edit mode) | authGuard |
 | /bodyweight | BodyweightComponent (lazy-loaded chart + add/list/edit/delete) | authGuard |
 
